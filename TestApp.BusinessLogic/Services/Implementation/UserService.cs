@@ -1,89 +1,138 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TestApp.BusinessLogic.Services.Interfaces;
+using TestApp.DataAccess.Context;
 using TestApp.Domain.Models;
 
 namespace TestApp.BusinessLogic.Services.Implementation
 {
-    public class UserService : IUserService
+    public class UserService //: IUserService
     {
-        public Task<Answer> AddAnswerAsync(Answer answer)
+        public async Task<Answer> GetLastAnswerAsync()
         {
-            throw new NotImplementedException();
+            using TestAppContext cntx = new();
+            return await cntx.Answers.OrderBy(a => a.Id).LastAsync();
         }
 
-        public Task<Question> AddQuestionAsync(string questionText)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<User> AuthenticateUserAsync(string name, string password)
+        public async Task<List<User>> GetAllUsersAsync(bool inclUserAnswers)
         {
-            throw new NotImplementedException();
-        }
+            using TestAppContext cntx = new();
 
-        public Task<Answer> GetAnswerAsync(Question question)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Test> GetQuestionListAsync(Test test)
-        {
-            FakeDB fdb = new FakeDB();
-
-            if (test.Id == 1)
-            {
-                return Task.FromResult(new Test { Questions = { fdb.questionTable[0], fdb.questionTable[1], fdb.questionTable[2] } });
-            }
-            else if (test.Id == 2)
-            {
-                return Task.FromResult(new Test { Questions = { fdb.questionTable[3], fdb.questionTable[4] } });
-            }
-            else if (test.Id == 3)
-            {
-                return Task.FromResult(new Test { Questions = { fdb.questionTable[5]} });
-            }
+            if (inclUserAnswers)
+                return await cntx.Users.AsNoTracking()
+                                       .Include(u => u.UserAnswers)
+                                       .ToListAsync();
             else
-                return null;
+                return await cntx.Users.AsNoTracking()
+                                       .ToListAsync();
         }
 
-        public Task<List<Test>> GetTestListAsync()
+
+        public async Task<List<Test>> GetAllTestsAsync(bool inclQuestions)
         {
-            return Task.FromResult(new FakeDB().testTable);
+            using TestAppContext cntx = new();
+
+            if (inclQuestions)
+                return await cntx.Tests.AsNoTracking()
+                                       .Include(t => t.Questions)
+                                       .ThenInclude(q => q.Answers)
+                                       .ToListAsync();
+            else
+                return await cntx.Tests.AsNoTracking()
+                                       .ToListAsync();
         }
 
-        public Task<User> GetUserAnswerSetAsync(User user)
+
+        public async Task<Test> GetSingleTestAsync(Test test)
         {
-            throw new NotImplementedException();
+            using TestAppContext cntx = new();
+
+            return await cntx.Tests.Include(t => t.Questions)
+                                   .ThenInclude(q => q.Answers)
+                                   .FirstOrDefaultAsync(t => t.Id == test.Id || t.TestName == test.TestName);
         }
 
-        public Task<List<User>> GetUserListAsync(User user)
-        {
 
-            if (user.IsController)
+        public async Task<Question> GetSingleQuestionAsync(Question question)
+        {
+            using TestAppContext cntx = new();
+
+            return await cntx.Questions.Include(q => q.Answers)
+                                       .FirstOrDefaultAsync(q => q.Id == question.Id || q.QuestionText == question.QuestionText);
+        }
+
+
+        public async Task AddNewTestAsync(Test test)
+        {
+            using TestAppContext cntx = new();
+
+            Task task = null;
+
+            task = Task.Run(() =>
             {
-                return Task.FromResult(new FakeDB().userTable);
-            }
+                cntx.Tests.Add(test);
+                cntx.SaveChanges();
+            });
 
-            return null;
+            await task;
         }
 
-        public Task<User> RegisterUserAsync(string name, string password)
+
+        public async Task UpdateTestAsync(Test test)
         {
-            throw new NotImplementedException();
+            using TestAppContext cntx = new();
+
+            Task task = null;
+
+            task = Task.Run(() =>
+            {
+                cntx.Tests.Update(test);
+                cntx.SaveChanges();
+            });
+
+            await task;
         }
 
-        public Task<bool> RemoveAnswerAsync(Answer answer)
+        public async Task RemoveTestAsync(Test test)
         {
-            throw new NotImplementedException();
+            using TestAppContext cntx = new();
+
+            await Task.Run(() =>
+            {
+                var testList = cntx.Tests.Where(t => t.Id == test.Id || t.TestName == test.TestName).ToList();
+                cntx.Tests.RemoveRange(testList);
+                cntx.SaveChanges();
+            });
         }
 
-        public Task<bool> RemoveQuestionAsync(Question question)
-        {
-            throw new NotImplementedException();
-        }
+        //async Task<List<Question>> GetTestQuestions(Test test)
+        //{
+        //    using (TestAppContext cntx = new TestAppContext())
+        //    {
+
+
+        //var users = await cntx.Users
+        //                         //.Include(p => p.Name)
+        //                         //.Where(p => p.CompanyId == 1)
+        //                         .ToListAsync()
+        //                         ;     // асинхронное получение данных
+
+        //        var highScores = from q in test.Questions
+        //                         where student.ExamScores[exam] > score
+        //                         select new { Name = student.FirstName, Score = student.ExamScores[exam] };
+
+        //        //var users = await cntx.Tests.FirstOrDefault(t => (t.Id == test.Id || t.TestName == test.TestName));
+
+        //        //return await cntx.Questions.Include(q => q.Tests.FirstOrDefault(p => p.Id == test.Id)).ToListAsync();
+        //        return await cntx.Tests.Where(t => t.Id == test.Id).Any(car => car.Questions.).ToListAsync();
+        //    }
+        //}
+
+
     }
 }

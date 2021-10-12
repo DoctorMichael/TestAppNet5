@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TestApp.DataAccess\TestApp.DataAccess.csproj" />
     <ProjectReference Include="..\TestApp.Domain\TestApp.Domain.csproj" />
   </ItemGroup>
 

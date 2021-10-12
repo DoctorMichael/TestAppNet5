@@ -12,5 +12,6 @@ namespace TestApp.Domain.Models
         public string QuestionText { get; set; }
 
         public ICollection<Answer> Answers { get; set; }
+        public ICollection<Test> Tests { get; set; }
     }
 }

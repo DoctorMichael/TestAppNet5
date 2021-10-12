@@ -17,9 +17,9 @@ There is No Correct Answer. - true
 
 
 (-1)^(1 / 2) = ...
-ой!
+Ой!
 -1
-ы
+И
 i - true
 
 
@@ -35,7 +35,7 @@ There is No Correct Answer. - true
 
 
 One  Two  ...  Four
-3
+3 - true
 3.14
 Three - true
 WTF?

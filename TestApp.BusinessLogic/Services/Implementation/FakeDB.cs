@@ -11,8 +11,9 @@ namespace TestApp.BusinessLogic.Services.Implementation
     {
         public List<User> userTable = new List<User>()
         {
-            new User{ Id = 1, Name = "Mike", Password = "1111", IsController = true },
-            new User() { Id = 2, Name = "Ann", Password = "2222", IsController = false }
+            new User{Id = 1}
+            //new User{ Id = 1, Name = "Mike", Password = "1111", IsController = true },
+            //new User() { Id = 2, Name = "Ann", Password = "2222", IsController = false }
         };
 
 

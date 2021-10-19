@@ -17,11 +17,14 @@ namespace TestApp.DataAccess.Context
         public DbSet<UserAnswer> UserAnswers { get; set; }
 
 
+        public TestAppContext(DbContextOptions<TestAppContext> options) : base(options)
+        {
+        }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TestDb;Integrated Security=True;Connect Timeout=30;" +
-                                        "Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TestDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
         }
 
 
@@ -31,7 +34,7 @@ namespace TestApp.DataAccess.Context
             {
                 u.HasKey(x => x.Id);
                 u.Property(x => x.Name).IsRequired();
-                u.HasAlternateKey(x => x.Password); ;
+                u.Property(x => x.Password).IsRequired(); ;
                 u.Property(x => x.IsController).IsRequired();
             });
 

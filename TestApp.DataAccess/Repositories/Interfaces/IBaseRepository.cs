@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TestApp.DataAccess.Context;
-using TestApp.Domain.Models;
 
-namespace TestApp.DataAccess
+namespace TestApp.DataAccess.Repositories.Interfaces
 {
-    internal class DataAccess
+    public interface IBaseRepository
     {
-
+        TestAppContext Context { get;}
     }
 }

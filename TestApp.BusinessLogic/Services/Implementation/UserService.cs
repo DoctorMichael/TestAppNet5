@@ -6,133 +6,81 @@ using System.Text;
 using System.Threading.Tasks;
 using TestApp.BusinessLogic.Services.Interfaces;
 using TestApp.DataAccess.Context;
+using TestApp.DataAccess.Repositories.Interfaces;
 using TestApp.Domain.Models;
 
 namespace TestApp.BusinessLogic.Services.Implementation
 {
-    public class UserService //: IUserService
+    public class UserService : IUserService
     {
-        public async Task<Answer> GetLastAnswerAsync()
+        readonly TestAppContext context;
+
+        public UserService(IBaseRepository baseRepository)
         {
-            using TestAppContext cntx = new();
-            return await cntx.Answers.OrderBy(a => a.Id).LastAsync();
+            context = baseRepository.Context;
         }
 
 
-        public async Task<List<User>> GetAllUsersAsync(bool inclUserAnswers)
+        public async Task<List<User>> GetAllUsersAsync(bool includeUserAnswers)
         {
-            using TestAppContext cntx = new();
 
-            if (inclUserAnswers)
-                return await cntx.Users.AsNoTracking()
+            if (includeUserAnswers)
+                return await context.Users.AsNoTracking()
                                        .Include(u => u.UserAnswers)
                                        .ToListAsync();
             else
-                return await cntx.Users.AsNoTracking()
+                return await context.Users.AsNoTracking()
                                        .ToListAsync();
         }
 
-
-        public async Task<List<Test>> GetAllTestsAsync(bool inclQuestions)
+        public async Task<List<Test>> GetAllTestsAsync(bool includeQuestions)
         {
-            using TestAppContext cntx = new();
 
-            if (inclQuestions)
-                return await cntx.Tests.AsNoTracking()
+            if (includeQuestions)
+                return await context.Tests.AsNoTracking()
                                        .Include(t => t.Questions)
                                        .ThenInclude(q => q.Answers)
                                        .ToListAsync();
             else
-                return await cntx.Tests.AsNoTracking()
+                return await context.Tests.AsNoTracking()
                                        .ToListAsync();
         }
 
-
-        public async Task<Test> GetSingleTestAsync(Test test)
+        public async Task<Test> GetSingleTestAsync(int testId)
         {
-            using TestAppContext cntx = new();
-
-            return await cntx.Tests.Include(t => t.Questions)
+            return await context.Tests.Include(t => t.Questions)
                                    .ThenInclude(q => q.Answers)
-                                   .FirstOrDefaultAsync(t => t.Id == test.Id || t.TestName == test.TestName);
+                                   .FirstOrDefaultAsync(t => t.Id == testId);
         }
 
-
-        public async Task<Question> GetSingleQuestionAsync(Question question)
+        public async Task<Question> GetSingleQuestionAsync(int questionId)
         {
-            using TestAppContext cntx = new();
 
-            return await cntx.Questions.Include(q => q.Answers)
-                                       .FirstOrDefaultAsync(q => q.Id == question.Id || q.QuestionText == question.QuestionText);
+            return await context.Questions.Include(q => q.Answers)
+                                       .FirstOrDefaultAsync(q => q.Id == questionId);
         }
-
 
         public async Task AddNewTestAsync(Test test)
         {
-            using TestAppContext cntx = new();
-
-            Task task = null;
-
-            task = Task.Run(() =>
-            {
-                cntx.Tests.Add(test);
-                cntx.SaveChanges();
-            });
-
-            await task;
+            await context.Tests.AddAsync(test);
+            await context.SaveChangesAsync();
         }
-
 
         public async Task UpdateTestAsync(Test test)
         {
-            using TestAppContext cntx = new();
-
-            Task task = null;
-
-            task = Task.Run(() =>
-            {
-                cntx.Tests.Update(test);
-                cntx.SaveChanges();
-            });
-
-            await task;
+            context.Tests.Update(test);
+            await context.SaveChangesAsync();
         }
 
-        public async Task RemoveTestAsync(Test test)
-        {
-            using TestAppContext cntx = new();
-
-            await Task.Run(() =>
+        public async Task RemoveTestAsync(int testId)
+        { 
+            var test = await context.Tests.Where(t => t.Id == testId).FirstOrDefaultAsync();
+           
+            if (test != null)
             {
-                var testList = cntx.Tests.Where(t => t.Id == test.Id || t.TestName == test.TestName).ToList();
-                cntx.Tests.RemoveRange(testList);
-                cntx.SaveChanges();
-            });
+                context.Tests.Remove(test);
+                await context.SaveChangesAsync();
+            }
         }
-
-        //async Task<List<Question>> GetTestQuestions(Test test)
-        //{
-        //    using (TestAppContext cntx = new TestAppContext())
-        //    {
-
-
-        //var users = await cntx.Users
-        //                         //.Include(p => p.Name)
-        //                         //.Where(p => p.CompanyId == 1)
-        //                         .ToListAsync()
-        //                         ;     // асинхронное получение данных
-
-        //        var highScores = from q in test.Questions
-        //                         where student.ExamScores[exam] > score
-        //                         select new { Name = student.FirstName, Score = student.ExamScores[exam] };
-
-        //        //var users = await cntx.Tests.FirstOrDefault(t => (t.Id == test.Id || t.TestName == test.TestName));
-
-        //        //return await cntx.Questions.Include(q => q.Tests.FirstOrDefault(p => p.Id == test.Id)).ToListAsync();
-        //        return await cntx.Tests.Where(t => t.Id == test.Id).Any(car => car.Questions.).ToListAsync();
-        //    }
-        //}
-
-
     }
 }

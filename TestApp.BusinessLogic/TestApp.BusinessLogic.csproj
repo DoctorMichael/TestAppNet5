@@ -5,6 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\Implementation\FakeDB.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TestApp.DataAccess\TestApp.DataAccess.csproj" />
     <ProjectReference Include="..\TestApp.Domain\TestApp.Domain.csproj" />
   </ItemGroup>

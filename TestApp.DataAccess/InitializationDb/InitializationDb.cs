@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ namespace TestApp.DataAccess.InitializationDb
     {
         public InitializationDb()
         {
+            TestAppContext context = new TestAppContext(new DbContextOptions<TestAppContext>());
 
             List<User> userTable = new()
             {
@@ -74,11 +76,9 @@ namespace TestApp.DataAccess.InitializationDb
             };
 
 
-            using TestAppContext context = new();
-
             context.Users.AddRange(userTable);
             context.SaveChanges();
-
+     
             context.Tests.AddRange(testTable);
             context.SaveChanges();
         }

@@ -1,14 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TestApp.DataAccess.Repositories.Interfaces;
 using TestApp.Domain.Models;
 
 namespace TestApp.DataAccess.Context
 {
-    public class TestAppContext : DbContext
+    public class TestAppContext : DbContext, IUnitOfWork
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Test> Tests { get; set; }

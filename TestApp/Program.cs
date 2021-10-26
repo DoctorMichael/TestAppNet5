@@ -11,6 +11,7 @@ using TestApp.Domain.Models;
 using TestApp.DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using TestApp.DataAccess.InitializationDb;
+using System.Diagnostics;
 
 namespace TestApp
 {

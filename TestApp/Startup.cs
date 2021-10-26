@@ -17,6 +17,7 @@ using TestApp.BusinessLogic.Services.Interfaces;
 using TestApp.DataAccess.Context;
 using TestApp.DataAccess.Repositories.Implementation;
 using TestApp.DataAccess.Repositories.Interfaces;
+using TestApp.Domain.Models;
 using TestApp.Profiles;
 
 namespace TestApp
@@ -38,7 +39,8 @@ namespace TestApp
 
             services.AddScoped<IUserService, UserService>();
 
-            services.AddScoped<IBaseRepository, BaseRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITestRepository, TestRepository>();
 
             services.AddAutoMapper(typeof(TestProfile));
 

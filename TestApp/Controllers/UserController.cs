@@ -67,22 +67,39 @@ namespace TestApp.Controllers
 
 
         [HttpPost("{name}")]
-        public OkResult AddNewTest(string name)
+        public OkObjectResult AddNewTest(string name)
         {
             Test test = new() { TestName = name, Questions = new List<Question>() { new() { QuestionText = "Quest1" }, new() { QuestionText = "Quest2" } } };
 
-            _userService.AddNewTestAsync(test);
+            var res = _userService.AddNewTestAsync(test);
 
-            return Ok();
+            return Ok(res.Result);
         }
 
 
         [HttpDelete("{testId}")]
-        public OkResult RemoveTestById(int testId)
+        public OkObjectResult RemoveTestById(int testId)
         {
-            _userService.RemoveTestAsync(testId);
+            var res = _userService.RemoveTestAsync(testId);
 
-            return Ok();
+            return Ok(res.Result);
+        }
+
+
+        [HttpPatch("{testId}")]
+        public OkObjectResult UpdateTestById(int testId)
+        {
+            Test test = _userService.GetSingleTestAsync(testId)?.Result;
+
+            if (test?.Questions?.Last() != null)
+            {
+                //test.TestName = "U_" + test.TestName; // Change TestName for exception.
+                test.Questions.Last().QuestionText = "U_" + test.Questions.Last().QuestionText;
+            }
+
+            var res = _userService.UpdateTestAsync(test);
+
+            return Ok(res.Result);
         }
     }
 

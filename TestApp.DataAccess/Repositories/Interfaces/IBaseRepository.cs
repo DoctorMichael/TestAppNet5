@@ -1,15 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using Ardalis.Specification;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TestApp.DataAccess.Context;
 
 namespace TestApp.DataAccess.Repositories.Interfaces
 {
-    public interface IBaseRepository
+    public interface IBaseRepository<T> where T : class
     {
-        TestAppContext Context { get;}
+        IUnitOfWork UnitOfWork { get; }
+
+        Task<T> CreateAsync(T item);
+        string Update(T item);
+        string Delete(T item); 
+        Task<IEnumerable<T>> GetAllAsync();
+        
+        //Task<T> GetSingleAsync(ISpecification<T> specification);
+        //Task<IEnumerable<T>> GetManyAsync(ISpecification<T> specification);
     }
 }

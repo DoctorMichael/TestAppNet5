@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TestApp.BusinessLogic.Services.Interfaces;
 using TestApp.DataAccess.Context;
@@ -13,73 +12,85 @@ namespace TestApp.BusinessLogic.Services.Implementation
 {
     public class UserService : IUserService
     {
-        readonly TestAppContext context;
+        readonly IUserRepository _userRepository;
+        readonly ITestRepository _testRepository;
 
-        public UserService(IBaseRepository baseRepository)
+        public UserService(IUserRepository userRepository, ITestRepository testRepository)
         {
-            context = baseRepository.Context;
+            _userRepository = userRepository;
+            _testRepository = testRepository;
         }
 
 
-        public async Task<List<User>> GetAllUsersAsync(bool includeUserAnswers)
+        public async Task<IEnumerable<User>> GetAllUsersAsync(bool includeUserAnswers)
         {
-
-            if (includeUserAnswers)
-                return await context.Users.AsNoTracking()
-                                       .Include(u => u.UserAnswers)
-                                       .ToListAsync();
-            else
-                return await context.Users.AsNoTracking()
-                                       .ToListAsync();
+            return await _userRepository.GetAllUsersAsync(includeUserAnswers);
         }
 
-        public async Task<List<Test>> GetAllTestsAsync(bool includeQuestions)
+        public async Task<IEnumerable<Test>> GetAllTestsAsync(bool includeQuestions)
         {
-
-            if (includeQuestions)
-                return await context.Tests.AsNoTracking()
-                                       .Include(t => t.Questions)
-                                       .ThenInclude(q => q.Answers)
-                                       .ToListAsync();
-            else
-                return await context.Tests.AsNoTracking()
-                                       .ToListAsync();
+            return await _testRepository.GetAllTestsAsync(includeQuestions);
         }
 
         public async Task<Test> GetSingleTestAsync(int testId)
         {
-            return await context.Tests.Include(t => t.Questions)
-                                   .ThenInclude(q => q.Answers)
-                                   .FirstOrDefaultAsync(t => t.Id == testId);
+            return await _testRepository.GetSingleTestAsync(testId);
         }
 
         public async Task<Question> GetSingleQuestionAsync(int questionId)
         {
-
-            return await context.Questions.Include(q => q.Answers)
-                                       .FirstOrDefaultAsync(q => q.Id == questionId);
+            return await _testRepository.GetSingleQuestionAsync(questionId);
         }
 
-        public async Task AddNewTestAsync(Test test)
+        public async Task<string> AddNewTestAsync(Test test)
         {
-            await context.Tests.AddAsync(test);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task UpdateTestAsync(Test test)
-        {
-            context.Tests.Update(test);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task RemoveTestAsync(int testId)
-        { 
-            var test = await context.Tests.Where(t => t.Id == testId).FirstOrDefaultAsync();
-           
-            if (test != null)
+            try
             {
-                context.Tests.Remove(test);
-                await context.SaveChangesAsync();
+                var res1 = await _testRepository.AddNewTestAsync(test);
+                var res2 = await _testRepository.UnitOfWork.SaveChangesAsync();
+                return res1.ToString() + "   Saved Changes: " + res2.ToString();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        public async Task<string> UpdateTestAsync(Test test)
+        {
+            try
+            {
+                var _test = await _testRepository.GetSingleTestAsync(test.Id);
+
+                if (_test == null)
+                    return "Error: Test with ID: " + test.Id + " not found.";
+
+                var res1 = _testRepository.Update(test);
+                var res2 = await _testRepository.UnitOfWork.SaveChangesAsync();
+                return res1.ToString() + "   Saved Changes: " + res2.ToString();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        public async Task<string> RemoveTestAsync(int testId)
+        {
+            try
+            {
+                var test = await _testRepository.GetSingleTestAsync(testId);
+
+                if (test == null)
+                    return "Error: Test with ID: " + testId + " not found.";
+
+                var res1 = _testRepository.Delete(test);
+                var res2 = await _testRepository.UnitOfWork.SaveChangesAsync();
+                return res1.ToString() + "   Saved Changes: " + res2.ToString();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
             }
         }
     }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TestApp.Domain.Models;
 
@@ -9,7 +6,7 @@ namespace TestApp.BusinessLogic.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<List<Test>> GetAllTestsAsync(bool inclQuestions);
+        Task<IEnumerable<Test>> GetAllTestsAsync(bool inclQuestions);
         Task<Test> GetSingleTestAsync(int testId);
         Task<Question> GetSingleQuestionAsync(int questionId);
 
@@ -19,11 +16,11 @@ namespace TestApp.BusinessLogic.Services.Interfaces
 
 
 
-        //// ============== Extra features for: user.IsController = true; ==================
-        Task<List<User>> GetAllUsersAsync(bool includeUserAnswers);
-        Task AddNewTestAsync(Test test);
-        Task UpdateTestAsync(Test test);
-        Task RemoveTestAsync(int testId);
+        // ============== Extra features for: user.IsController = true; ==================
+        Task<IEnumerable<User>> GetAllUsersAsync(bool includeUserAnswers);
+        Task<string> AddNewTestAsync(Test test);
+        Task<string> UpdateTestAsync(Test test);
+        Task<string> RemoveTestAsync(int testId);
 
 
         //Task AddQuestionAsync(Question question);

@@ -1,9 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TestApp.DataAccess.Context;
 using TestApp.Domain.Models;
 
@@ -58,27 +54,27 @@ namespace TestApp.DataAccess.InitializationDb
 
             List<Question> questionTable = new()
             {
-                new (){ QuestionText = "The Nearest Result for 2 x 2 = ...", Answers = new List<Answer>{ answerTable[0], answerTable[1], answerTable[2] } },
-                new (){ QuestionText = "0 / 0 = ...", Answers = new List<Answer>{ answerTable[3], answerTable[4], answerTable[5], answerTable[6], answerTable[7] } },
-                new (){ QuestionText = "(-1)^(1 / 2) = ...", Answers = new List<Answer>{ answerTable[8], answerTable[9], answerTable[10], answerTable[11] } },
+                new() { QuestionText = "The Nearest Result for 2 x 2 = ...", Answers = new List<Answer> { answerTable[0], answerTable[1], answerTable[2] } },
+                new() { QuestionText = "0 / 0 = ...", Answers = new List<Answer> { answerTable[3], answerTable[4], answerTable[5], answerTable[6], answerTable[7] } },
+                new() { QuestionText = "(-1)^(1 / 2) = ...", Answers = new List<Answer> { answerTable[8], answerTable[9], answerTable[10], answerTable[11] } },
 
-                new (){ QuestionText = "How Old Are You?", Answers = new List<Answer>{ answerTable[12], answerTable[13], answerTable[14], answerTable[15] } },
-                new (){ QuestionText = "One  Two  ...  Four", Answers = new List<Answer>{ answerTable[16], answerTable[17], answerTable[18], answerTable[19] } },
+                new() { QuestionText = "How Old Are You?", Answers = new List<Answer> { answerTable[12], answerTable[13], answerTable[14], answerTable[15] } },
+                new() { QuestionText = "One  Two  ...  Four", Answers = new List<Answer> { answerTable[16], answerTable[17], answerTable[18], answerTable[19] } },
 
-                new (){ QuestionText = "Are You Sorry For Moo-moo?", Answers = new List<Answer>{ answerTable[20], answerTable[21] } }
+                new() { QuestionText = "Are You Sorry For Moo-moo?", Answers = new List<Answer> { answerTable[20], answerTable[21] } }
             };
 
             List<Test> testTable = new()
             {
-                new (){ TestName = "Mathematics", Questions = new List<Question>{ questionTable[0], questionTable[1], questionTable[2] } },
-                new (){ TestName = "English", Questions = new List<Question>{ questionTable[3], questionTable[4] } },
-                new (){ TestName = "Pretend To Be Kind", Questions = new List<Question>{ questionTable[5] } }
+                new() { TestName = "Mathematics", Questions = new List<Question> { questionTable[0], questionTable[1], questionTable[2] } },
+                new() { TestName = "English", Questions = new List<Question> { questionTable[3], questionTable[4] } },
+                new() { TestName = "Pretend To Be Kind", Questions = new List<Question> { questionTable[5] } }
             };
 
 
             context.Users.AddRange(userTable);
             context.SaveChanges();
-     
+
             context.Tests.AddRange(testTable);
             context.SaveChanges();
         }

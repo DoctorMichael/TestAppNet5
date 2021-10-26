@@ -1,24 +1,66 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TestApp.DataAccess.Context;
 using TestApp.DataAccess.Repositories.Interfaces;
-using TestApp.Domain.Models;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 
 namespace TestApp.DataAccess.Repositories.Implementation
 {
-    public class BaseRepository : IBaseRepository
+    public class BaseRepository<T, TContex> : IBaseRepository<T> 
+        where T : class 
+        where TContex : DbContext, IUnitOfWork
     {
 
-        protected readonly TestAppContext context;
+        protected readonly TContex _context;
 
-        public BaseRepository()
+        public BaseRepository(TContex context)
         {
-            context = new TestAppContext(new DbContextOptions<TestAppContext>());
+            _context = context;
         }
-        TestAppContext IBaseRepository.Context { get => context; }
+
+        public IUnitOfWork UnitOfWork { get => _context; }
+
+
+
+        public async Task<T> CreateAsync(T item)
+        {
+            var entity = await _context.Set<T>().AddAsync(item);
+            return Task.FromResult(entity.Entity).Result;
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+            return await _context.Set<T>().AsNoTracking()
+                                          .ToListAsync();
+        }
+
+        public string Update(T item)
+        {
+            try
+            {
+                var res = _context.Set<T>().Update(item);
+                return res.State.ToString();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        public string Delete(T item)
+        {
+            try
+            {
+                var res = _context.Set<T>().Remove(item);
+                return res.State.ToString();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
     }
+
 }

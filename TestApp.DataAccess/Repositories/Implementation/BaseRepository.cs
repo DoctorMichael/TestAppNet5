@@ -8,8 +8,8 @@ using System;
 
 namespace TestApp.DataAccess.Repositories.Implementation
 {
-    public class BaseRepository<T, TContex> : IBaseRepository<T> 
-        where T : class 
+    public class BaseRepository<T, TContex> : IBaseRepository<T>
+        where T : class
         where TContex : DbContext, IUnitOfWork
     {
 
@@ -27,7 +27,7 @@ namespace TestApp.DataAccess.Repositories.Implementation
         public async Task<T> CreateAsync(T item)
         {
             var entity = await _context.Set<T>().AddAsync(item);
-            return Task.FromResult(entity.Entity).Result;
+            return entity.Entity;
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
@@ -36,30 +36,16 @@ namespace TestApp.DataAccess.Repositories.Implementation
                                           .ToListAsync();
         }
 
-        public string Update(T item)
+        public Task Update(T item)
         {
-            try
-            {
-                var res = _context.Set<T>().Update(item);
-                return res.State.ToString();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            _context.Set<T>().Update(item);
+            return Task.CompletedTask;  
         }
 
-        public string Delete(T item)
+        public Task Delete(T item)
         {
-            try
-            {
-                var res = _context.Set<T>().Remove(item);
-                return res.State.ToString();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            _context.Set<T>().Remove(item);
+            return Task.CompletedTask;
         }
     }
 

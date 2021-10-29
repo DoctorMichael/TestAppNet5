@@ -33,9 +33,18 @@ namespace TestApp.DataAccess.Repositories.Implementation
 
         public async Task<Test> GetSingleTestAsync(int testId)
         {
-            return await _dbSetTest.Include(t => t.Questions)
+            return await _dbSetTest//.AsNoTracking()
+                                   .Include(t => t.Questions)
                                    .ThenInclude(q => q.Answers)
                                    .FirstOrDefaultAsync(t => t.Id == testId);
+        }
+
+        public async Task<Test> GetSingleTestAsync(string testName)
+        {
+            return await _dbSetTest//.AsNoTracking()
+                                   .Include(t => t.Questions)
+                                   .ThenInclude(q => q.Answers)
+                                   .FirstOrDefaultAsync(t => t.TestName == testName);
         }
 
         public async Task<Question> GetSingleQuestionAsync(int questionId)
@@ -45,17 +54,10 @@ namespace TestApp.DataAccess.Repositories.Implementation
                                            .FirstOrDefaultAsync(q => q.Id == questionId);
         }
 
-        public async Task<string> AddNewTestAsync(Test test)
+        public async Task<Test> AddNewTestAsync(Test test)
         {
-            try
-            {
-                var res = await _dbSetTest.AddAsync(test);
-                return res.State.ToString();  
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            var res = await _dbSetTest.AddAsync(test);
+            return res.Entity;
         }
     }
 }

@@ -7,7 +7,8 @@ namespace TestApp.BusinessLogic.Services.Interfaces
     public interface IUserService
     {
         Task<IEnumerable<Test>> GetAllTestsAsync(bool inclQuestions);
-        Task<Test> GetSingleTestAsync(int testId);
+        Task<Test> GetSingleTestByIdAsync(int testId);
+        Task<Test> GetSingleTestByTestNameAsync(string testName);
         Task<Question> GetSingleQuestionAsync(int questionId);
 
 
@@ -18,9 +19,9 @@ namespace TestApp.BusinessLogic.Services.Interfaces
 
         // ============== Extra features for: user.IsController = true; ==================
         Task<IEnumerable<User>> GetAllUsersAsync(bool includeUserAnswers);
-        Task<string> AddNewTestAsync(Test test);
-        Task<string> UpdateTestAsync(Test test);
-        Task<string> RemoveTestAsync(int testId);
+        Task<int> AddNewTestAsync(Test test);
+        Task UpdateTestAsync(Test test);
+        Task RemoveTestAsync(Test test);
 
 
         //Task AddQuestionAsync(Question question);

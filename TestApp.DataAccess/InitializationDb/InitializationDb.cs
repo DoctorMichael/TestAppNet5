@@ -19,37 +19,37 @@ namespace TestApp.DataAccess.InitializationDb
 
             List<Answer> answerTable = new()
             {
-                new() { IsCorrect = true, AnswerText = "3" },
-                new() { IsCorrect = false, AnswerText = "7...8" },
-                new() { IsCorrect = false, AnswerText = "22" },
+                new() { IsCorrect = true, AnswerText = "3", QuestionId = 1 },
+                new() { IsCorrect = false, AnswerText = "7...8", QuestionId = 1 },
+                new() { IsCorrect = false, AnswerText = "22", QuestionId = 1 },
 
-                new() { IsCorrect = false, AnswerText = "1" },
-                new() { IsCorrect = false, AnswerText = "0" },
-                new() { IsCorrect = false, AnswerText = "inf." },
-                new() { IsCorrect = true, AnswerText = "There is No Correct Answer." },
-                new() { IsCorrect = false, AnswerText = "-inf." },
+                new() { IsCorrect = false, AnswerText = "1", QuestionId = 2 },
+                new() { IsCorrect = false, AnswerText = "0", QuestionId = 2 },
+                new() { IsCorrect = false, AnswerText = "inf.", QuestionId = 2 },
+                new() { IsCorrect = true, AnswerText = "There is No Correct Answer.", QuestionId = 2 },
+                new() { IsCorrect = false, AnswerText = "-inf.", QuestionId = 2 },
 
-                new() { IsCorrect = false, AnswerText = "Ой!" },
-                new() { IsCorrect = false, AnswerText = "-1" },
-                new() { IsCorrect = false, AnswerText = "И" },
-                new() { IsCorrect = true, AnswerText = "i" },
-
-                //----------------------------------------------------
-
-                new() { IsCorrect = false, AnswerText = "Yes, I am." },
-                new() { IsCorrect = false, AnswerText = "London." },
-                new() { IsCorrect = false, AnswerText = "Ich spreche kein Deutsch." },
-                new() { IsCorrect = true, AnswerText = "There is No Correct Answer." },
-
-                new() { IsCorrect = true, AnswerText = "3" },
-                new() { IsCorrect = false, AnswerText = "3.14" },
-                new() { IsCorrect = true, AnswerText = "Three" },
-                new() { IsCorrect = false, AnswerText = "WTF?" },
+                new() { IsCorrect = false, AnswerText = "Ой!", QuestionId = 3 },
+                new() { IsCorrect = false, AnswerText = "-1", QuestionId = 3 },
+                new() { IsCorrect = false, AnswerText = "И", QuestionId = 3 },
+                new() { IsCorrect = true, AnswerText = "i", QuestionId = 3 },
 
                 //----------------------------------------------------
 
-                new() { IsCorrect = true, AnswerText = "Yes" },
-                new() { IsCorrect = false, AnswerText = "No" }
+                new() { IsCorrect = false, AnswerText = "Yes, I am.", QuestionId = 4 },
+                new() { IsCorrect = false, AnswerText = "London.", QuestionId = 4 },
+                new() { IsCorrect = false, AnswerText = "Ich spreche kein Deutsch.", QuestionId = 4 },
+                new() { IsCorrect = true, AnswerText = "There is No Correct Answer.", QuestionId = 4 },
+
+                new() { IsCorrect = true, AnswerText = "3", QuestionId = 5 },
+                new() { IsCorrect = false, AnswerText = "3.14", QuestionId = 5 },
+                new() { IsCorrect = true, AnswerText = "Three", QuestionId = 5 },
+                new() { IsCorrect = false, AnswerText = "WTF?", QuestionId = 5 },
+
+                //----------------------------------------------------
+
+                new() { IsCorrect = true, AnswerText = "Yes", QuestionId = 6 },
+                new() { IsCorrect = false, AnswerText = "No", QuestionId = 6 }
             };
 
             List<Question> questionTable = new()

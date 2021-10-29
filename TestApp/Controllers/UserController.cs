@@ -77,19 +77,24 @@ namespace TestApp.Controllers
         }
 
 
-        [HttpDelete("{testId}")]
-        public OkObjectResult RemoveTestById(int testId)
+        [HttpDelete("{testInfo}")]
+        public OkObjectResult RemoveTestById(string testInfo)
         {
-            var res = _userService.RemoveTestAsync(testId);
+            Task res;
 
-            return Ok(res.Result);
+            if (int.TryParse(testInfo, out int testId))
+                res = _userService.RemoveTestAsync(_userService.GetSingleTestByIdAsync(testId).Result);
+            else
+                res = _userService.RemoveTestAsync(_userService.GetSingleTestByTestNameAsync(testInfo).Result);
+
+            return Ok(res);
         }
 
 
         [HttpPatch("{testId}")]
         public OkObjectResult UpdateTestById(int testId)
         {
-            Test test = _userService.GetSingleTestAsync(testId)?.Result;
+            Test test = _userService.GetSingleTestByIdAsync(testId)?.Result;
 
             if (test?.Questions?.Last() != null)
             {
@@ -99,7 +104,7 @@ namespace TestApp.Controllers
 
             var res = _userService.UpdateTestAsync(test);
 
-            return Ok(res.Result);
+            return Ok(res);
         }
     }
 

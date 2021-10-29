@@ -2,7 +2,7 @@
 
 namespace TestApp.DataAccess.Migrations
 {
-    public partial class InitializeDB : Migration
+    public partial class InitializationDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,13 +40,12 @@ namespace TestApp.DataAccess.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsController = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                    table.UniqueConstraint("AK_Users_Password", x => x.Password);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,6 +122,67 @@ namespace TestApp.DataAccess.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Questions",
+                columns: new[] { "Id", "QuestionText" },
+                values: new object[,]
+                {
+                    { 1, "The Nearest Result for 2 x 2 = ..." },
+                    { 2, "0 / 0 = ..." },
+                    { 3, "(-1)^(1 / 2) = ..." },
+                    { 4, "How Old Are You?" },
+                    { 5, "One  Two  ...  Four" },
+                    { 6, "Are You Sorry For Moo-moo?" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Tests",
+                columns: new[] { "Id", "TestName" },
+                values: new object[,]
+                {
+                    { 1, "Mathematics" },
+                    { 2, "English" },
+                    { 3, "Pretend To Be Kind" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "IsController", "Name", "Password" },
+                values: new object[,]
+                {
+                    { 1, true, "Mike", "1111" },
+                    { 2, false, "Ann", "2222" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Answers",
+                columns: new[] { "Id", "AnswerText", "IsCorrect", "QuestionId" },
+                values: new object[,]
+                {
+                    { 1, "3", true, 1 },
+                    { 20, "WTF?", false, 5 },
+                    { 19, "Three", true, 5 },
+                    { 18, "3.14", false, 5 },
+                    { 17, "3", true, 5 },
+                    { 16, "There is No Correct Answer.", true, 4 },
+                    { 15, "Ich spreche kein Deutsch.", false, 4 },
+                    { 14, "London.", false, 4 },
+                    { 13, "Yes, I am.", false, 4 },
+                    { 12, "i", true, 3 },
+                    { 11, "И", false, 3 },
+                    { 10, "-1", false, 3 },
+                    { 9, "Ой!", false, 3 },
+                    { 8, "-inf.", false, 2 },
+                    { 7, "There is No Correct Answer.", true, 2 },
+                    { 6, "inf.", false, 2 },
+                    { 5, "0", false, 2 },
+                    { 4, "1", false, 2 },
+                    { 3, "22", false, 1 },
+                    { 2, "7...8", false, 1 },
+                    { 21, "Yes", true, 6 },
+                    { 22, "No", false, 6 }
                 });
 
             migrationBuilder.CreateIndex(

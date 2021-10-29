@@ -9,8 +9,8 @@ namespace TestApp.DataAccess.Repositories.Interfaces
         IUnitOfWork UnitOfWork { get; }
 
         Task<T> CreateAsync(T item);
-        string Update(T item);
-        string Delete(T item); 
+        Task Update(T item);
+        Task Delete(T item); 
         Task<IEnumerable<T>> GetAllAsync();
         
         //Task<T> GetSingleAsync(ISpecification<T> specification);

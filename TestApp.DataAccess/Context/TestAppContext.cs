@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using TestApp.DataAccess.InitializationDb;
 using TestApp.DataAccess.Repositories.Interfaces;
 using TestApp.Domain.Models;
 
@@ -18,10 +20,10 @@ namespace TestApp.DataAccess.Context
         }
 
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TestDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TestDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+        //}
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -58,6 +60,8 @@ namespace TestApp.DataAccess.Context
 
             modelBuilder.Entity<UserAnswer>().HasKey(ua => new { ua.UserID, ua.TestID, ua.AnswerID });
 
+            // Initialization DB.
+            modelBuilder.Seed();
         }
     }
 }

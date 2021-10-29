@@ -32,9 +32,14 @@ namespace TestApp.BusinessLogic.Services.Implementation
             return await _testRepository.GetAllTestsAsync(includeQuestions);
         }
 
-        public async Task<Test> GetSingleTestAsync(int testId)
+        public async Task<Test> GetSingleTestByIdAsync(int testId)
         {
             return await _testRepository.GetSingleTestAsync(testId);
+        }
+
+        public async Task<Test> GetSingleTestByTestNameAsync(string testName)
+        {
+            return await _testRepository.GetSingleTestAsync(testName);
         }
 
         public async Task<Question> GetSingleQuestionAsync(int questionId)
@@ -42,56 +47,30 @@ namespace TestApp.BusinessLogic.Services.Implementation
             return await _testRepository.GetSingleQuestionAsync(questionId);
         }
 
-        public async Task<string> AddNewTestAsync(Test test)
+        public async Task<int> AddNewTestAsync(Test test)
         {
-            try
-            {
-                var res1 = await _testRepository.AddNewTestAsync(test);
-                var res2 = await _testRepository.UnitOfWork.SaveChangesAsync();
-                return res1.ToString() + "   Saved Changes: " + res2.ToString();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            var res = await _testRepository.AddNewTestAsync(test);
+            await _testRepository.UnitOfWork.SaveChangesAsync();
+            return res.Id;
         }
 
-        public async Task<string> UpdateTestAsync(Test test)
+        public async Task UpdateTestAsync(Test test)
         {
-            try
-            {
-                var _test = await _testRepository.GetSingleTestAsync(test.Id);
-
-                if (_test == null)
-                    return "Error: Test with ID: " + test.Id + " not found.";
-
-                var res1 = _testRepository.Update(test);
-                var res2 = await _testRepository.UnitOfWork.SaveChangesAsync();
-                return res1.ToString() + "   Saved Changes: " + res2.ToString();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            await _testRepository.Update(test);
+            await _testRepository.UnitOfWork.SaveChangesAsync();
         }
 
-        public async Task<string> RemoveTestAsync(int testId)
+        public async Task RemoveTestAsync(Test test)
         {
-            try
-            {
-                var test = await _testRepository.GetSingleTestAsync(testId);
+            Test removeTest = test;
 
-                if (test == null)
-                    return "Error: Test with ID: " + testId + " not found.";
+            if (string.IsNullOrEmpty(removeTest.TestName))
+                removeTest = await GetSingleTestByIdAsync(test.Id);
+            else if (removeTest.Id <= 0)
+                removeTest = await GetSingleTestByTestNameAsync(test.TestName);
 
-                var res1 = _testRepository.Delete(test);
-                var res2 = await _testRepository.UnitOfWork.SaveChangesAsync();
-                return res1.ToString() + "   Saved Changes: " + res2.ToString();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            await _testRepository.Delete(removeTest);
+            await _testRepository.UnitOfWork.SaveChangesAsync();
         }
     }
 }

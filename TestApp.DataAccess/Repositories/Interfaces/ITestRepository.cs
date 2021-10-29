@@ -11,7 +11,8 @@ namespace TestApp.DataAccess.Repositories.Interfaces
     {
         Task<IEnumerable<Test>> GetAllTestsAsync(bool includeQuestions);
         Task<Test> GetSingleTestAsync(int testId);
+        Task<Test> GetSingleTestAsync(string testName);
         Task<Question> GetSingleQuestionAsync(int questionId);
-        Task<string> AddNewTestAsync(Test test);
+        Task<Test> AddNewTestAsync(Test test);
     }
 }

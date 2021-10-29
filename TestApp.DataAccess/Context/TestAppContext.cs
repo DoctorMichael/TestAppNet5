@@ -20,12 +20,6 @@ namespace TestApp.DataAccess.Context
         }
 
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TestDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-        //}
-
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>(u =>
@@ -40,6 +34,9 @@ namespace TestApp.DataAccess.Context
             {
                 t.HasKey(x => x.Id);
                 t.HasAlternateKey(x => x.TestName);
+                t.HasMany(t => t.Questions)
+                 .WithMany(q => q.Tests)
+                 .UsingEntity(qt => qt.ToTable("QuestionTest"));
             });
 
             modelBuilder.Entity<Question>(q =>

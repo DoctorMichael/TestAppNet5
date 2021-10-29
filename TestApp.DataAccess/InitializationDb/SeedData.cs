@@ -70,6 +70,20 @@ namespace TestApp.DataAccess.InitializationDb
                 new() { Id = 21, IsCorrect = true, AnswerText = "Yes", QuestionId = 6 },
                 new() { Id = 22, IsCorrect = false, AnswerText = "No", QuestionId = 6 }
                 );
+
+
+            modelBuilder.Entity<Test>()
+                        .HasMany(t => t.Questions)
+                        .WithMany(q => q.Tests)
+                        .UsingEntity(qt => qt.HasData(
+                            new { TestsId = 1, QuestionsId = 1 },
+                            new { TestsId = 1, QuestionsId = 2 },
+                            new { TestsId = 1, QuestionsId = 3 },
+                            new { TestsId = 2, QuestionsId = 4 },
+                            new { TestsId = 2, QuestionsId = 5 },
+                            new { TestsId = 3, QuestionsId = 6 }
+                            )
+                );
         }
     }
 }

@@ -21,7 +21,7 @@ namespace TestApp.BusinessLogic.Services.Interfaces
         Task<IEnumerable<User>> GetAllUsersAsync(bool includeUserAnswers);
         Task<int> AddNewTestAsync(Test test);
         Task UpdateTestAsync(Test test);
-        Task RemoveTestAsync(Test test);
+        Task RemoveTestAsync(int testId);
 
 
         //Task AddQuestionAsync(Question question);

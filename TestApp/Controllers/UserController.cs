@@ -33,36 +33,14 @@ namespace TestApp.Controllers
         {
             var res = _userService.GetAllTestsAsync(true).Result;
 
-
-            //var res2 = _mapper.Map<List<TestDto>>(res);
-            //return Ok(res2);
-
-
-            List<DTO<Question>> listDTO = new();
+            List<TestDto> testDtos = new();
 
             foreach (var item in res)
             {
-                List<Question> temp = new();
-
-                foreach (var item2 in item.Questions)
-                {
-                    List<Answer> tempAnswer = new();
-
-                    foreach (var item3 in item2.Answers)
-                    {
-                        tempAnswer.Add(new Answer { Id = item3.Id, AnswerText = item3.AnswerText, IsCorrect = item3.IsCorrect, QuestionId = item3.QuestionId });
-                    }
-
-                    temp.Add(new Question { Id = item2.Id, QuestionText = item2.QuestionText, Answers = tempAnswer });
-                }
-
-                listDTO.Add(new DTO<Question> { id = item.Id, name = item.TestName, text = item.ToString(), tl = temp });
+                testDtos.Add(new TestDto(item));
             }
 
-            //var shuffleListDTO = listLDTO.OrderBy(a => Guid.NewGuid()).ToList();
-
-            return Ok(listDTO);
-
+            return Ok(testDtos);
         }
 
 
@@ -77,15 +55,10 @@ namespace TestApp.Controllers
         }
 
 
-        [HttpDelete("{testInfo}")]
-        public OkObjectResult RemoveTestById(string testInfo)
+        [HttpDelete("{testId}")]
+        public OkObjectResult RemoveTestById(int testId)
         {
-            Task res;
-
-            if (int.TryParse(testInfo, out int testId))
-                res = _userService.RemoveTestAsync(_userService.GetSingleTestByIdAsync(testId).Result);
-            else
-                res = _userService.RemoveTestAsync(_userService.GetSingleTestByTestNameAsync(testInfo).Result);
+            var res = _userService.RemoveTestAsync(testId);
 
             return Ok(res);
         }
@@ -94,7 +67,7 @@ namespace TestApp.Controllers
         [HttpPatch("{testId}")]
         public OkObjectResult UpdateTestById(int testId)
         {
-            Test test = _userService.GetSingleTestByIdAsync(testId)?.Result;
+            Test test = _userService.GetSingleTestByIdAsync(testId).Result;
 
             if (test?.Questions?.Last() != null)
             {
@@ -106,13 +79,5 @@ namespace TestApp.Controllers
 
             return Ok(res);
         }
-    }
-
-    public class DTO<T> // Just for testing API response without circular references.
-    {
-        public int id { get; set; } = 0;
-        public string text { get; set; } = "";
-        public string name { get; set; } = "";
-        public ICollection<T> tl { get; set; }
     }
 }

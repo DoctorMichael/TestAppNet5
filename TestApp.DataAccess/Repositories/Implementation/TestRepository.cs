@@ -33,16 +33,14 @@ namespace TestApp.DataAccess.Repositories.Implementation
 
         public async Task<Test> GetSingleTestAsync(int testId)
         {
-            return await _dbSetTest//.AsNoTracking()
-                                   .Include(t => t.Questions)
+            return await _dbSetTest.Include(t => t.Questions)
                                    .ThenInclude(q => q.Answers)
                                    .FirstOrDefaultAsync(t => t.Id == testId);
         }
 
         public async Task<Test> GetSingleTestAsync(string testName)
         {
-            return await _dbSetTest//.AsNoTracking()
-                                   .Include(t => t.Questions)
+            return await _dbSetTest.Include(t => t.Questions)
                                    .ThenInclude(q => q.Answers)
                                    .FirstOrDefaultAsync(t => t.TestName == testName);
         }

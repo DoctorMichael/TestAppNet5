@@ -56,18 +56,19 @@ namespace TestApp.BusinessLogic.Services.Implementation
 
         public async Task UpdateTestAsync(Test test)
         {
+            if (test == null)
+                throw new Exception();
+
             await _testRepository.Update(test);
             await _testRepository.UnitOfWork.SaveChangesAsync();
         }
 
-        public async Task RemoveTestAsync(Test test)
+        public async Task RemoveTestAsync(int testId)
         {
-            Test removeTest = test;
+            Test removeTest = await GetSingleTestByIdAsync(testId);
 
-            if (string.IsNullOrEmpty(removeTest.TestName))
-                removeTest = await GetSingleTestByIdAsync(test.Id);
-            else if (removeTest.Id <= 0)
-                removeTest = await GetSingleTestByTestNameAsync(test.TestName);
+            if (removeTest == null)
+                throw new Exception();
 
             await _testRepository.Delete(removeTest);
             await _testRepository.UnitOfWork.SaveChangesAsync();

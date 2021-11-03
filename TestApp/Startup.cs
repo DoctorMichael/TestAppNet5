@@ -46,6 +46,9 @@ namespace TestApp
 
             services.AddAutoMapper(typeof(TestProfile));
 
+            services.AddControllersWithViews().AddNewtonsoftJson(options =>
+                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+
 
             services.AddControllers();
 

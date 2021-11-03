@@ -39,7 +39,7 @@ namespace TestApp.DataAccess.Repositories.Implementation
         public Task Update(T item)
         {
             _context.Set<T>().Update(item);
-            return Task.CompletedTask;  
+            return Task.CompletedTask;
         }
 
         public Task Delete(T item)

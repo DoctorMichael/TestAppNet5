@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
@@ -15,6 +21,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TestApp.BusinessLogic\TestApp.BusinessLogic.csproj" />
+    <ProjectReference Include="..\TestApp.DataAccess\TestApp.DataAccess.csproj" />
+    <ProjectReference Include="..\TestApp.Domain\TestApp.Domain.csproj" />
   </ItemGroup>
 
 </Project>

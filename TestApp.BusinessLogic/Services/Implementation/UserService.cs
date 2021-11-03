@@ -1,89 +1,77 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TestApp.BusinessLogic.Services.Interfaces;
+using TestApp.DataAccess.Context;
+using TestApp.DataAccess.Repositories.Interfaces;
 using TestApp.Domain.Models;
 
 namespace TestApp.BusinessLogic.Services.Implementation
 {
     public class UserService : IUserService
     {
-        public Task<Answer> AddAnswerAsync(Answer answer)
+        readonly IUserRepository _userRepository;
+        readonly ITestRepository _testRepository;
+
+        public UserService(IUserRepository userRepository, ITestRepository testRepository)
         {
-            throw new NotImplementedException();
+            _userRepository = userRepository;
+            _testRepository = testRepository;
         }
 
-        public Task<Question> AddQuestionAsync(string questionText)
+
+        public async Task<IEnumerable<User>> GetAllUsersAsync(bool includeUserAnswers)
         {
-            throw new NotImplementedException();
+            return await _userRepository.GetAllUsersAsync(includeUserAnswers);
         }
 
-        public Task<User> AuthenticateUserAsync(string name, string password)
+        public async Task<IEnumerable<Test>> GetAllTestsAsync(bool includeQuestions)
         {
-            throw new NotImplementedException();
+            return await _testRepository.GetAllTestsAsync(includeQuestions);
         }
 
-        public Task<Answer> GetAnswerAsync(Question question)
+        public async Task<Test> GetSingleTestByIdAsync(int testId)
         {
-            throw new NotImplementedException();
+            return await _testRepository.GetSingleTestAsync(testId);
         }
 
-        public Task<Test> GetQuestionListAsync(Test test)
+        public async Task<Test> GetSingleTestByTestNameAsync(string testName)
         {
-            FakeDB fdb = new FakeDB();
-
-            if (test.Id == 1)
-            {
-                return Task.FromResult(new Test { Questions = { fdb.questionTable[0], fdb.questionTable[1], fdb.questionTable[2] } });
-            }
-            else if (test.Id == 2)
-            {
-                return Task.FromResult(new Test { Questions = { fdb.questionTable[3], fdb.questionTable[4] } });
-            }
-            else if (test.Id == 3)
-            {
-                return Task.FromResult(new Test { Questions = { fdb.questionTable[5]} });
-            }
-            else
-                return null;
+            return await _testRepository.GetSingleTestAsync(testName);
         }
 
-        public Task<List<Test>> GetTestListAsync()
+        public async Task<Question> GetSingleQuestionAsync(int questionId)
         {
-            return Task.FromResult(new FakeDB().testTable);
+            return await _testRepository.GetSingleQuestionAsync(questionId);
         }
 
-        public Task<User> GetUserAnswerSetAsync(User user)
+        public async Task<int> AddNewTestAsync(Test test)
         {
-            throw new NotImplementedException();
+            var res = await _testRepository.AddNewTestAsync(test);
+            await _testRepository.UnitOfWork.SaveChangesAsync();
+            return res.Id;
         }
 
-        public Task<List<User>> GetUserListAsync(User user)
+        public async Task UpdateTestAsync(Test test)
         {
+            if (test == null)
+                throw new Exception();
 
-            if (user.IsController)
-            {
-                return Task.FromResult(new FakeDB().userTable);
-            }
-
-            return null;
+            await _testRepository.Update(test);
+            await _testRepository.UnitOfWork.SaveChangesAsync();
         }
 
-        public Task<User> RegisterUserAsync(string name, string password)
+        public async Task RemoveTestAsync(int testId)
         {
-            throw new NotImplementedException();
-        }
+            Test removeTest = await GetSingleTestByIdAsync(testId);
 
-        public Task<bool> RemoveAnswerAsync(Answer answer)
-        {
-            throw new NotImplementedException();
-        }
+            if (removeTest == null)
+                throw new Exception();
 
-        public Task<bool> RemoveQuestionAsync(Question question)
-        {
-            throw new NotImplementedException();
+            await _testRepository.Delete(removeTest);
+            await _testRepository.UnitOfWork.SaveChangesAsync();
         }
     }
 }

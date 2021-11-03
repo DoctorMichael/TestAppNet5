@@ -1,0 +1,16 @@
+﻿using AutoMapper;
+using System.Collections.Generic;
+using TestApp.Domain.Models;
+using TestApp.DTOs;
+
+namespace TestApp.Profiles
+{
+    public class TestProfile : Profile
+    {
+        public TestProfile()
+        {
+            CreateMap<Test, TestDto>().PreserveReferences();
+            //CreateMap<Test, TestDto>().MaxDepth(1);
+        }
+    }
+}

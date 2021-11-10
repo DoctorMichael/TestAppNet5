@@ -22,7 +22,7 @@ namespace TestApp.Middlewares
             }
             catch (Exception ex)
             {
-                await httpContext.Response.WriteAsync("Got some kind of exception:\r\n\r\n" + ex.Message);
+                await httpContext.Response.WriteAsync(ex.GetBaseException().Message);
             }
         }
     }

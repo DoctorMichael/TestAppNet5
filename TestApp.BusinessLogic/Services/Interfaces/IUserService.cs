@@ -8,7 +8,7 @@ namespace TestApp.BusinessLogic.Services.Interfaces
     {
         Task<IEnumerable<Test>> GetAllTestsAsync(bool inclQuestions);
         Task<Test> GetSingleTestByIdAsync(int testId);
-        Task<Test> GetSingleTestByTestNameAsync(string testName);
+        Task<bool> IsExistTestWithTestNameAsync(string testName);
         Task<Question> GetSingleQuestionAsync(int questionId);
 
 
@@ -20,8 +20,10 @@ namespace TestApp.BusinessLogic.Services.Interfaces
         // ============== Extra features for: user.IsController = true; ==================
         Task<IEnumerable<User>> GetAllUsersAsync(bool includeUserAnswers);
         Task<int> AddNewTestAsync(Test test);
-        Task UpdateTestAsync(Test test);
-        Task RemoveTestAsync(int testId);
+        Task<Test> UpdateTestAsync(Test test);
+        Task<int> RemoveTestAsync(int testId);
+        Task<IEnumerable<Question>> GetAllQuestionsAsync(bool includeAnswers);
+        Task<int> AddNewQuestionAsync(Question question);
 
 
         //Task AddQuestionAsync(Question question);

@@ -13,6 +13,7 @@ namespace TestApp.DataAccess.Repositories.Implementation
     public class TestRepository : BaseRepository<Test, TestAppContext>, ITestRepository, IBaseRepository<Test>
     {
         protected readonly DbSet<Test> _dbSetTest;
+
         public TestRepository(TestAppContext context) : base(context)
         {
             _dbSetTest = context.Set<Test>();
@@ -20,7 +21,6 @@ namespace TestApp.DataAccess.Repositories.Implementation
 
         public async Task<IEnumerable<Test>> GetAllTestsAsync(bool includeQuestions)
         {
-
             if (includeQuestions)
                 return await _dbSetTest.AsNoTracking()
                                        .Include(t => t.Questions)
@@ -29,6 +29,17 @@ namespace TestApp.DataAccess.Repositories.Implementation
             else
                 return await _dbSetTest.AsNoTracking()
                                        .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Question>> GetAllQuestionsAsync(bool includeAnswers)
+        {
+            if (includeAnswers)
+                return await _context.Questions.AsNoTracking()
+                                               .Include(q => q.Answers)
+                                               .ToListAsync();
+            else
+                return await _context.Questions.AsNoTracking()
+                                               .ToListAsync();
         }
 
         public async Task<Test> GetSingleTestAsync(int testId)
@@ -47,7 +58,6 @@ namespace TestApp.DataAccess.Repositories.Implementation
 
         public async Task<Question> GetSingleQuestionAsync(int questionId)
         {
-
             return await _context.Questions.Include(q => q.Answers)
                                            .FirstOrDefaultAsync(q => q.Id == questionId);
         }
@@ -55,6 +65,12 @@ namespace TestApp.DataAccess.Repositories.Implementation
         public async Task<Test> AddNewTestAsync(Test test)
         {
             var res = await _dbSetTest.AddAsync(test);
+            return res.Entity;
+        }
+
+        public async Task<Question> AddNewQuestionAsync(Question question)
+        {
+            var res = await _context.Questions.AddAsync(question);
             return res.Entity;
         }
     }

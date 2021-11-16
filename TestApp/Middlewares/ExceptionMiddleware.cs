@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using TestApp.BusinessLogic.Exceptions;
 
 namespace TestApp.Middlewares
 {
@@ -22,6 +22,11 @@ namespace TestApp.Middlewares
             }
             catch (Exception ex)
             {
+                if (ex.GetBaseException() is IStatusCode statusCode)
+                    httpContext.Response.StatusCode = statusCode.StatusCode;
+
+                httpContext.Response.ContentType = "text/html";
+
                 await httpContext.Response.WriteAsync(ex.GetBaseException().Message);
             }
         }

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using System.Collections.Generic;
 using TestApp.Domain.Models;
 using TestApp.DTOs;
 

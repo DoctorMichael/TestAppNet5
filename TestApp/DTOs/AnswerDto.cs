@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TestApp.Domain.Models;
+﻿using TestApp.Domain.Models;
 
 namespace TestApp.DTOs
 {

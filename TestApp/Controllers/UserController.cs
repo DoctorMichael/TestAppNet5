@@ -1,14 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TestApp.BusinessLogic.Exceptions;
-using TestApp.BusinessLogic.Services.Implementation;
 using TestApp.BusinessLogic.Services.Interfaces;
-using TestApp.DataAccess.Context;
 using TestApp.Domain.Models;
 using TestApp.DTOs;
 
@@ -28,9 +22,24 @@ namespace TestApp.Controllers
         }
 
 
+        [HttpGet("GetAllUsers{includeUserAnswers}")]
+        public OkObjectResult GetAllUsers(bool includeUserAnswers)
+        {
+            var res = _userService.GetAllUsersAsync(includeUserAnswers).Result;
+
+            List<UserDto> userDtos = new();
+
+            foreach (var item in res)
+            {
+                userDtos.Add(new UserDto(item));
+            }
+
+            return Ok(userDtos);
+        }
+
 
         [HttpGet("GetAllTests{includeQuestions}")]
-        public OkObjectResult GetAllTest(bool includeQuestions)
+        public OkObjectResult GetAllTests(bool includeQuestions)
         {
             var res = _userService.GetAllTestsAsync(includeQuestions).Result;
 
@@ -61,8 +70,30 @@ namespace TestApp.Controllers
         }
 
 
+
+        [HttpPost("AddNewUser")]
+        public ActionResult AddNewUser(AddUserDto addUserDto)
+        {
+            User user = new() { Name = addUserDto.Name, Password = addUserDto.Password, IsController = addUserDto.IsController };
+
+            var addedUserId = _userService.AddNewUserAsync(user).Result;
+
+            (string message, int newUserId) res = ("New User ID: " + addedUserId + ", User Name: " + user.Name + " added successfully.", addedUserId);
+
+            if (addedUserId > 0)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                res = ("Failed to add new User: " + user.Name, addedUserId);
+                return StatusCode(400, res);
+            }
+        }
+
+
         [HttpPost("AddNewTest")]
-        public OkObjectResult AddNewTest(string testName, int[] questionIds)
+        public ActionResult AddNewTest(string testName, int[] questionIds)
         {
             Test test = new() { TestName = testName };
 
@@ -90,13 +121,13 @@ namespace TestApp.Controllers
             else
             {
                 res = ("Failed to add new Test: " + test.TestName, addedTestId);
-                return Ok(res);
+                return StatusCode(400, res);
             }
         }
 
 
         [HttpPost("AddNewQuestion")]
-        public OkObjectResult AddNewQuestion(string questionText, AnswerLightDto[] answers)
+        public ActionResult AddNewQuestion(string questionText, AddAnswerDto[] answers)
         {
             Question question = new() { QuestionText = questionText };
 
@@ -121,8 +152,36 @@ namespace TestApp.Controllers
             else
             {
                 res = ("Failed to add new Question: " + questionText, addedQuestionId);
-                return Ok(res);
+                return StatusCode(400, res);
             }
+        }
+
+
+        [HttpPost("AddNewUserAnswer")]
+        public ActionResult AddNewUserAnswer(UserAnswerDto userAnswerDto)
+        {
+            UserAnswer userAnswer = new() { UserID = userAnswerDto.UserID, TestID = userAnswerDto.TestID, AnswerID = userAnswerDto.AnswerID };
+
+            var userAnswerReturned = _userService.AddNewUserAnswerAsync(userAnswer).Result;
+
+            if (userAnswerReturned != null)
+            {
+                return Ok("New UserAnswer added successfully.");
+            }
+            else
+            {
+                return StatusCode(400, "Failed to add new UserAnswer.");
+            }
+        }
+
+
+
+        [HttpDelete("RemoveUser{userId}")]
+        public OkObjectResult RemoveUserById(int userId)
+        {
+            var res = _userService.RemoveUserAsync(userId);
+
+            return Ok("User ID: " + res.Result + " removed successfully.");
         }
 
 
@@ -133,6 +192,32 @@ namespace TestApp.Controllers
 
             return Ok("Test ID: " + res.Result + " removed successfully.");
         }
+
+
+        [HttpDelete("RemoveQuestion{questionId}")]
+        public OkObjectResult RemoveQuestionById(int questionId)
+        {
+            var res = _userService.RemoveQuestionAsync(questionId);
+
+            return Ok("Question ID: " + res.Result + " removed successfully.");
+        }
+
+
+        [HttpDelete("RemoveUserAnswers")]
+        public ActionResult RemoveUserAnswers(int userId, int testId)
+        {
+            var res = _userService.RemoveUserAnswersForTestAsync(userId, testId);
+
+            if (res.Result > 0)
+            {
+                return Ok(res.Result + " UserAnswers for User ID: " + userId + " and Test ID: " + testId + " removed successfully.");
+            }
+            else
+            {
+                return StatusCode(400, "Failed to remove UserAnswers.");
+            }
+        }
+
 
 
         [HttpPatch("AddQuestionsToTest")]

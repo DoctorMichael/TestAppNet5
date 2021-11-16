@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TestApp.DataAccess.Context;
 using TestApp.DataAccess.Repositories.Interfaces;
@@ -31,17 +28,6 @@ namespace TestApp.DataAccess.Repositories.Implementation
                                        .ToListAsync();
         }
 
-        public async Task<IEnumerable<Question>> GetAllQuestionsAsync(bool includeAnswers)
-        {
-            if (includeAnswers)
-                return await _context.Questions.AsNoTracking()
-                                               .Include(q => q.Answers)
-                                               .ToListAsync();
-            else
-                return await _context.Questions.AsNoTracking()
-                                               .ToListAsync();
-        }
-
         public async Task<Test> GetSingleTestAsync(int testId)
         {
             return await _dbSetTest.Include(t => t.Questions)
@@ -56,21 +42,9 @@ namespace TestApp.DataAccess.Repositories.Implementation
                                    .FirstOrDefaultAsync(t => t.TestName == testName);
         }
 
-        public async Task<Question> GetSingleQuestionAsync(int questionId)
-        {
-            return await _context.Questions.Include(q => q.Answers)
-                                           .FirstOrDefaultAsync(q => q.Id == questionId);
-        }
-
         public async Task<Test> AddNewTestAsync(Test test)
         {
             var res = await _dbSetTest.AddAsync(test);
-            return res.Entity;
-        }
-
-        public async Task<Question> AddNewQuestionAsync(Question question)
-        {
-            var res = await _context.Questions.AddAsync(question);
             return res.Entity;
         }
     }

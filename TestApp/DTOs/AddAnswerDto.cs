@@ -2,20 +2,20 @@
 
 namespace TestApp.DTOs
 {
-    public class AnswerLightDto
+    public class AddAnswerDto
     {
         public string AnswerText { get; set; }
         public bool IsCorrect { get; set; }
 
-        public AnswerLightDto() { }
+        public AddAnswerDto() { }
 
-        public AnswerLightDto(AnswerDto answerDto)
+        public AddAnswerDto(AnswerDto answerDto)
         {
             AnswerText = answerDto.AnswerText;
             IsCorrect = answerDto.IsCorrect;
         }
 
-        public AnswerLightDto(Answer answer)
+        public AddAnswerDto(Answer answer)
         {
             AnswerText = answer.AnswerText;
             IsCorrect = answer.IsCorrect;

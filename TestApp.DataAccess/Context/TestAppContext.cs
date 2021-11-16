@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using TestApp.DataAccess.InitializationDb;
 using TestApp.DataAccess.Repositories.Interfaces;
 using TestApp.Domain.Models;
@@ -26,7 +25,7 @@ namespace TestApp.DataAccess.Context
             {
                 u.HasKey(x => x.Id);
                 u.Property(x => x.Name).IsRequired();
-                u.Property(x => x.Password).IsRequired(); ;
+                u.Property(x => x.Password).IsRequired();
                 u.Property(x => x.IsController).IsRequired();
             });
 
@@ -57,7 +56,6 @@ namespace TestApp.DataAccess.Context
 
             modelBuilder.Entity<UserAnswer>().HasKey(ua => new { ua.UserID, ua.TestID, ua.AnswerID });
 
-            // Initialization DB.
             modelBuilder.Seed();
         }
     }

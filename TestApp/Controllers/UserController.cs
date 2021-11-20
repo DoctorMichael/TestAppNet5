@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TestApp.BusinessLogic.Exceptions;
 using TestApp.BusinessLogic.Services.Interfaces;
 using TestApp.Domain.Models;
@@ -14,18 +16,25 @@ namespace TestApp.Controllers
     {
         readonly IMapper _mapper;
         readonly IUserService _userService;
+        readonly IValidator<CreateAnswerDto> _validatorAnswerDto;
+        readonly IValidator<CreateUserDto> _validatorUserDto;
+        readonly IValidator<object> _validatorNotNull;
 
-        public UserController(IMapper mapper, IUserService userService)
+        public UserController(IMapper mapper, IUserService userService, IValidator<CreateAnswerDto> validatorAnswerDto,
+                              IValidator<CreateUserDto> validatorUserDto, IValidator<object> validatorNotNull)
         {
             _mapper = mapper;
             _userService = userService;
+            _validatorAnswerDto = validatorAnswerDto;
+            _validatorUserDto = validatorUserDto;
+            _validatorNotNull = validatorNotNull;
         }
 
 
         [HttpGet("GetAllUsers{includeUserAnswers}")]
-        public OkObjectResult GetAllUsers(bool includeUserAnswers)
+        public async Task<ActionResult> GetAllUsers(bool includeUserAnswers)
         {
-            var res = _userService.GetAllUsersAsync(includeUserAnswers).Result;
+            var res = await _userService.GetAllUsersAsync(includeUserAnswers);
 
             List<UserDto> userDtos = new();
 
@@ -39,9 +48,9 @@ namespace TestApp.Controllers
 
 
         [HttpGet("GetAllTests{includeQuestions}")]
-        public OkObjectResult GetAllTests(bool includeQuestions)
+        public async Task<ActionResult> GetAllTests(bool includeQuestions)
         {
-            var res = _userService.GetAllTestsAsync(includeQuestions).Result;
+            var res = await _userService.GetAllTestsAsync(includeQuestions);
 
             List<TestDto> testDtos = new();
 
@@ -55,9 +64,9 @@ namespace TestApp.Controllers
 
 
         [HttpGet("GetAllQuestions{includeAnswers}")]
-        public OkObjectResult GetAllQuestions(bool includeAnswers)
+        public async Task<ActionResult> GetAllQuestions(bool includeAnswers)
         {
-            var res = _userService.GetAllQuestionsAsync(includeAnswers).Result;
+            var res = await _userService.GetAllQuestionsAsync(includeAnswers);
 
             List<QuestionDto> questionDtos = new();
 
@@ -72,11 +81,13 @@ namespace TestApp.Controllers
 
 
         [HttpPost("AddNewUser")]
-        public ActionResult AddNewUser(AddUserDto addUserDto)
+        public async Task<ActionResult> AddNewUser(CreateUserDto addUserDto)
         {
+            _validatorUserDto.ValidateAndThrow(addUserDto);
+
             User user = new() { Name = addUserDto.Name, Password = addUserDto.Password, IsController = addUserDto.IsController };
 
-            var addedUserId = _userService.AddNewUserAsync(user).Result;
+            var addedUserId = await _userService.AddNewUserAsync(user);
 
             (string message, int newUserId) res = ("New User ID: " + addedUserId + ", User Name: " + user.Name + " added successfully.", addedUserId);
 
@@ -93,7 +104,7 @@ namespace TestApp.Controllers
 
 
         [HttpPost("AddNewTest")]
-        public ActionResult AddNewTest(string testName, int[] questionIds)
+        public async Task<ActionResult> AddNewTest(string testName, int[] questionIds)
         {
             Test test = new() { TestName = testName };
 
@@ -103,14 +114,14 @@ namespace TestApp.Controllers
 
                 foreach (var id in questionIds)
                 {
-                    var question = _userService.GetSingleQuestionAsync(id);
+                    var question = await _userService.GetSingleQuestionAsync(id);
 
-                    if (question?.Result != null)
-                        test.Questions.Add(question.Result);
+                    if (question != null)
+                        test.Questions.Add(question);
                 }
             }
 
-            var addedTestId = _userService.AddNewTestAsync(test).Result;
+            var addedTestId = await _userService.AddNewTestAsync(test);
 
             (string message, int newTestId) res = ("New Test ID: " + addedTestId + ", Test Name: " + testName + " added successfully.", addedTestId);
 
@@ -127,7 +138,7 @@ namespace TestApp.Controllers
 
 
         [HttpPost("AddNewQuestion")]
-        public ActionResult AddNewQuestion(string questionText, AddAnswerDto[] answers)
+        public async Task<ActionResult> AddNewQuestion(string questionText, CreateAnswerDto[] answers)
         {
             Question question = new() { QuestionText = questionText };
 
@@ -137,11 +148,12 @@ namespace TestApp.Controllers
 
                 foreach (var item in answers)
                 {
+                    _validatorAnswerDto.ValidateAndThrow(item);
                     question.Answers.Add(new Answer { AnswerText = item.AnswerText, IsCorrect = item.IsCorrect });
                 }
             }
 
-            var addedQuestionId = _userService.AddNewQuestionAsync(question).Result;
+            var addedQuestionId = await _userService.AddNewQuestionAsync(question);
 
             (string message, int newQuestionId) res = ("New Question ID: " + addedQuestionId + ", Question Text: " + questionText + " added successfully.", addedQuestionId);
 
@@ -158,11 +170,11 @@ namespace TestApp.Controllers
 
 
         [HttpPost("AddNewUserAnswer")]
-        public ActionResult AddNewUserAnswer(UserAnswerDto userAnswerDto)
+        public async Task<ActionResult> AddNewUserAnswer(UserAnswerDto userAnswerDto)
         {
             UserAnswer userAnswer = new() { UserID = userAnswerDto.UserID, TestID = userAnswerDto.TestID, AnswerID = userAnswerDto.AnswerID };
 
-            var userAnswerReturned = _userService.AddNewUserAnswerAsync(userAnswer).Result;
+            var userAnswerReturned = await _userService.AddNewUserAnswerAsync(userAnswer);
 
             if (userAnswerReturned != null)
             {
@@ -177,40 +189,40 @@ namespace TestApp.Controllers
 
 
         [HttpDelete("RemoveUser{userId}")]
-        public OkObjectResult RemoveUserById(int userId)
+        public async Task<ActionResult> RemoveUserById(int userId)
         {
-            var res = _userService.RemoveUserAsync(userId);
+            var res = await _userService.RemoveUserAsync(userId);
 
-            return Ok("User ID: " + res.Result + " removed successfully.");
+            return Ok("User ID: " + res + " removed successfully.");
         }
 
 
         [HttpDelete("RemoveTest{testId}")]
-        public OkObjectResult RemoveTestById(int testId)
+        public async Task<ActionResult> RemoveTestById(int testId)
         {
-            var res = _userService.RemoveTestAsync(testId);
+            var res = await _userService.RemoveTestAsync(testId);
 
-            return Ok("Test ID: " + res.Result + " removed successfully.");
+            return Ok("Test ID: " + res + " removed successfully.");
         }
 
 
         [HttpDelete("RemoveQuestion{questionId}")]
-        public OkObjectResult RemoveQuestionById(int questionId)
+        public async Task<ActionResult> RemoveQuestionById(int questionId)
         {
-            var res = _userService.RemoveQuestionAsync(questionId);
+            var res = await _userService.RemoveQuestionAsync(questionId);
 
-            return Ok("Question ID: " + res.Result + " removed successfully.");
+            return Ok("Question ID: " + res + " removed successfully.");
         }
 
 
         [HttpDelete("RemoveUserAnswers")]
-        public ActionResult RemoveUserAnswers(int userId, int testId)
+        public async Task<ActionResult> RemoveUserAnswers(int userId, int testId)
         {
-            var res = _userService.RemoveUserAnswersForTestAsync(userId, testId);
+            var res = await _userService.RemoveUserAnswersForTestAsync(userId, testId);
 
-            if (res.Result > 0)
+            if (res > 0)
             {
-                return Ok(res.Result + " UserAnswers for User ID: " + userId + " and Test ID: " + testId + " removed successfully.");
+                return Ok(res + " UserAnswers for User ID: " + userId + " and Test ID: " + testId + " removed successfully.");
             }
             else
             {
@@ -221,9 +233,9 @@ namespace TestApp.Controllers
 
 
         [HttpPatch("AddQuestionsToTest")]
-        public OkObjectResult AddQuestionsToTest(int testId, int[] questionIds)
+        public async Task<ActionResult> AddQuestionsToTest(int testId, int[] questionIds)
         {
-            Test test = _userService.GetSingleTestByIdAsync(testId).Result;
+            Test test = await _userService.GetSingleTestByIdAsync(testId);
 
             if (test == null || test.Id <= 0)
                 throw new ItemNotFoundException("Unable to update. Test ID: " + testId + " not found.");
@@ -246,7 +258,7 @@ namespace TestApp.Controllers
 
                     if (needAddQuestion)
                     {
-                        Question question = _userService.GetSingleQuestionAsync(id).Result;
+                        Question question = await _userService.GetSingleQuestionAsync(id);
 
                         if (question != null)
                             test.Questions.Add(question);
@@ -259,23 +271,23 @@ namespace TestApp.Controllers
 
                 foreach (var id in questionIds)
                 {
-                    Question question = _userService.GetSingleQuestionAsync(id).Result;
+                    Question question = await _userService.GetSingleQuestionAsync(id);
 
                     if (question != null)
                         test.Questions.Add(question);
                 }
             }
 
-            var updatedTest = _userService.UpdateTestAsync(test).Result;
+            var updatedTest = await _userService.UpdateTestAsync(test);
 
             return Ok(new TestDto(updatedTest));
         }
 
 
         [HttpPatch("RemoveQuestionsFromTest")]
-        public OkObjectResult RemoveQuestionsFromTest(int testId, int[] questionIds)
+        public async Task<ActionResult> RemoveQuestionsFromTest(int testId, int[] questionIds)
         {
-            Test test = _userService.GetSingleTestByIdAsync(testId).Result;
+            Test test = await _userService.GetSingleTestByIdAsync(testId);
 
             if (test == null || test.Id <= 0)
                 throw new ItemNotFoundException("Unable to update. Test ID: " + testId + " not found.");
@@ -298,7 +310,7 @@ namespace TestApp.Controllers
 
                     if (needRemoveQuestion)
                     {
-                        Question question = _userService.GetSingleQuestionAsync(id).Result;
+                        Question question = await _userService.GetSingleQuestionAsync(id);
 
                         if (question != null)
                             test.Questions.Remove(question);
@@ -306,7 +318,7 @@ namespace TestApp.Controllers
                 }
             }
 
-            var updatedTest = _userService.UpdateTestAsync(test).Result;
+            Test updatedTest = await _userService.UpdateTestAsync(test);
 
             return Ok(new TestDto(updatedTest));
         }

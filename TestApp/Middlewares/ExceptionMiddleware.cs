@@ -25,6 +25,9 @@ namespace TestApp.Middlewares
                 if (ex.GetBaseException() is IStatusCode statusCode)
                     httpContext.Response.StatusCode = statusCode.StatusCode;
 
+                if (httpContext.Response.StatusCode == 200)
+                    httpContext.Response.StatusCode = 400;
+
                 httpContext.Response.ContentType = "text/html";
 
                 await httpContext.Response.WriteAsync(ex.GetBaseException().Message);

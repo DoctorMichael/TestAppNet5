@@ -2,20 +2,20 @@
 
 namespace TestApp.DTOs
 {
-    public class AddUserDto
+    public class CreateUserDto
     {
         public string Name { get; set; }
         public string Password { get; set; }
         public bool IsController { get; set; }
 
-        public AddUserDto() { }
-        public AddUserDto(UserDto userDto)
+        public CreateUserDto() { }
+        public CreateUserDto(UserDto userDto)
         {
             Name = userDto.Name;
             Password = userDto.Password;
             IsController = userDto.IsController;
         }
-        public AddUserDto(User user)
+        public CreateUserDto(User user)
         {
             Name = user.Name;
             Password = user.Password;

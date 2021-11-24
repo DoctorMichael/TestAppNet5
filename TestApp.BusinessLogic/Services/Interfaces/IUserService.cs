@@ -22,17 +22,18 @@ namespace TestApp.BusinessLogic.Services.Interfaces
         Task<User> GetSingleUserByIdAsync(int userId);
 
         Task<int> AddNewUserAsync(User user);
-        Task<int> AddNewTestAsync(Test test);
+        Task<int> AddNewTestAsync(string testName, List<int> questionIds);
         Task<int> AddNewQuestionAsync(Question question);
         Task<UserAnswer> AddNewUserAnswerAsync(UserAnswer userAnswer);
+        Task<Test> AddQuestionsToTestAsync(int testId, List<int> questionIds);
 
         Task<int> RemoveUserAsync(int userId);
         Task<int> RemoveTestAsync(int testId);
         Task<int> RemoveQuestionAsync(int questionId);
         Task<int> RemoveUserAnswersForTestAsync(int userId, int testId);
+        Task<Test> RemoveQuestionsFromTestAsync(int testId, List<int> questionIds);
 
         Task<Test> UpdateTestAsync(Test test);
-
 
         Task<bool> IsExistTestWithTestNameAsync(string testName);
     }

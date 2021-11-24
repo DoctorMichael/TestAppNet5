@@ -1,3 +1,4 @@
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,6 +25,8 @@ namespace TestApp
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            ValidatorOptions.Global.LanguageManager.Enabled = false;
         }
 
 

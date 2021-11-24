@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FluentValidation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace TestApp.BusinessLogic.Services.Implementation
         readonly IQuestionRepository _questionRepository;
         readonly IUserAnswerRepository _userAnswerRepository;
 
-        public UserService(IUserRepository userRepository, ITestRepository testRepository, 
+        public UserService(IUserRepository userRepository, ITestRepository testRepository,
                            IQuestionRepository questionRepository, IUserAnswerRepository userAnswerRepository)
         {
             _userRepository = userRepository;
@@ -120,14 +121,22 @@ namespace TestApp.BusinessLogic.Services.Implementation
             return res;
         }
 
-        public async Task<int> AddNewTestAsync(Test test)
+        public async Task<int> AddNewTestAsync(string testName, List<int> questionIds)
         {
-            if (test == null)
-                throw new NullReferenceException("Unable to add Test. New Test not specified.");
-            else if (test.TestName == null || test.TestName == "")
-                throw new IncorrectDataException("Unable to add Test. TestName not specified.");
-            else if (IsExistTestWithTestNameAsync(test.TestName).Result)
-                throw new ItemAlreadyExistException("Unable to add Test. TestName: " + test.TestName + " allready exist.");
+            if (IsExistTestWithTestNameAsync(testName).Result)
+                throw new ItemAlreadyExistException("Unable to add Test. TestName: " + testName + " allready exist.");
+
+            Test test = new() { TestName = testName, Questions = new List<Question>() };
+
+            foreach (var id in questionIds)
+            {
+                var question = await GetSingleQuestionAsync(id);
+
+                if (question != null)
+                    test.Questions.Add(question);
+                else
+                    throw new ItemNotFoundException("Unable to add Test. Question ID: " + id + " not found.");
+            }
 
             var res = await _testRepository.AddNewTestAsync(test);
             await _testRepository.UnitOfWork.SaveChangesAsync();
@@ -146,7 +155,45 @@ namespace TestApp.BusinessLogic.Services.Implementation
             return res.Id;
         }
 
+        public async Task<Test> AddQuestionsToTestAsync(int testId, List<int> questionIds)
+        {
+            Test test = await GetSingleTestByIdAsync(testId);
 
+            if (test == null || test.Id <= 0)
+                throw new ItemNotFoundException("Unable to update. Test ID: " + testId + " not found.");
+
+            if (test.Questions == null)
+                test.Questions = new List<Question>();
+
+
+            foreach (var id in questionIds)
+            {
+                bool needAddQuestion = true;
+
+                foreach (var item2 in test.Questions)
+                {
+                    if (id == item2.Id)
+                    {
+                        needAddQuestion = false;
+                        break;
+                    }
+                }
+
+                if (needAddQuestion)
+                {
+                    Question question = await GetSingleQuestionAsync(id);
+
+                    if (question != null)
+                        test.Questions.Add(question);
+                    else
+                        throw new ItemNotFoundException("Unable to update Test. Questions ID: " + id + " not found.");
+                }
+            }
+
+            return await UpdateTestAsync(test);
+        }
+
+       
         public async Task<int> RemoveUserAsync(int userId)
         {
             User removeUser = await _userRepository.GetSingleUserAsync(userId);
@@ -209,7 +256,43 @@ namespace TestApp.BusinessLogic.Services.Implementation
             return res;
         }
 
+        public async Task<Test> RemoveQuestionsFromTestAsync(int testId, List<int> questionIds)
+        {
+            Test test = await GetSingleTestByIdAsync(testId);
 
+            if (test == null || test.Id <= 0)
+                throw new ItemNotFoundException("Unable to update. Test ID: " + testId + " not found.");
+
+            if (test.Questions == null)
+                throw new ItemNotFoundException("Unable to update. Test ID: " + testId + " doesn't contain any questions.");
+
+
+            foreach (var id in questionIds)
+            {
+                bool needRemoveQuestion = false;
+
+                foreach (var item2 in test.Questions)
+                {
+                    if (id == item2.Id)
+                    {
+                        needRemoveQuestion = true;
+                        break;
+                    }
+                }
+
+                if (needRemoveQuestion)
+                {
+                    Question question = await GetSingleQuestionAsync(id);
+
+                    if (question != null)
+                        test.Questions.Remove(question);
+                }
+            }
+
+            return await UpdateTestAsync(test);
+        }
+
+      
         public async Task<Test> UpdateTestAsync(Test test)
         {
             if (test == null)
@@ -232,6 +315,5 @@ namespace TestApp.BusinessLogic.Services.Implementation
 
             return res != null;
         }
-
     }
 }

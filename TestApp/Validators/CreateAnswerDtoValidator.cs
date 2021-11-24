@@ -7,7 +7,7 @@ namespace TestApp.BusinessLogic.Validators
     {
         public CreateAnswerDtoValidator()
         {
-            RuleFor(x => x.AnswerText).NotNull().NotEqual("").WithMessage("{PropertyName} should be not empty.");
+            RuleFor(x => x.AnswerText).NotEmpty().MaximumLength(100);
         }
     }
 }

@@ -7,8 +7,8 @@ namespace TestApp.Validators
     {
         public CreateUserDtoValidator()
         {
-            RuleFor(x => x.Name).NotNull().NotEqual("").WithMessage("{PropertyName} should be not empty.");
-            RuleFor(x => x.Password).NotNull().NotEqual("").WithMessage("{PropertyName} should be not empty.");
+            RuleFor(x => x.Name).NotEmpty().MaximumLength(50);
+            RuleFor(x => x.Password).NotEmpty().Length(4, 20);
         }
     }
 }

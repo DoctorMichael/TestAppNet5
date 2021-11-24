@@ -8,28 +8,33 @@ namespace TestApp.BusinessLogic.Services.Interfaces
     {
         Task<IEnumerable<Test>> GetAllTestsAsync(bool inclQuestions);
         Task<Test> GetSingleTestByIdAsync(int testId);
-        Task<bool> IsExistTestWithTestNameAsync(string testName);
         Task<Question> GetSingleQuestionAsync(int questionId);
+        Task<IEnumerable<UserAnswer>> GetUserAnswersForTestAsync(int userId, int testId);
 
 
         //Task<User> AuthenticateUserAsync(string name, string password);
         //Task<User> RegisterUserAsync(string name, string password);
 
 
-
         // ============== Extra features for: user.IsController = true; ==================
         Task<IEnumerable<User>> GetAllUsersAsync(bool includeUserAnswers);
-        Task<int> AddNewTestAsync(Test test);
-        Task<Test> UpdateTestAsync(Test test);
-        Task<int> RemoveTestAsync(int testId);
         Task<IEnumerable<Question>> GetAllQuestionsAsync(bool includeAnswers);
+        Task<User> GetSingleUserByIdAsync(int userId);
+
+        Task<int> AddNewUserAsync(User user);
+        Task<int> AddNewTestAsync(string testName, List<int> questionIds);
         Task<int> AddNewQuestionAsync(Question question);
+        Task<UserAnswer> AddNewUserAnswerAsync(UserAnswer userAnswer);
+        Task<Test> AddQuestionsToTestAsync(int testId, List<int> questionIds);
 
+        Task<int> RemoveUserAsync(int userId);
+        Task<int> RemoveTestAsync(int testId);
+        Task<int> RemoveQuestionAsync(int questionId);
+        Task<int> RemoveUserAnswersForTestAsync(int userId, int testId);
+        Task<Test> RemoveQuestionsFromTestAsync(int testId, List<int> questionIds);
 
-        //Task AddQuestionAsync(Question question);
-        //Task AddAnswerAsync(Answer answer);
+        Task<Test> UpdateTestAsync(Test test);
 
-        //Task RemoveQuestionAsync(int questionId);
-        //Task RemoveAnswerAsync(int answerId);
+        Task<bool> IsExistTestWithTestNameAsync(string testName);
     }
 }

@@ -1,5 +1,4 @@
-﻿using Ardalis.Specification;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace TestApp.DataAccess.Repositories.Interfaces
@@ -10,10 +9,8 @@ namespace TestApp.DataAccess.Repositories.Interfaces
 
         Task<T> CreateAsync(T item);
         Task Update(T item);
-        Task Delete(T item); 
+        Task Delete(T item);
+        Task<int> DeleteRange(T[] items);
         Task<IEnumerable<T>> GetAllAsync();
-        
-        //Task<T> GetSingleAsync(ISpecification<T> specification);
-        //Task<IEnumerable<T>> GetManyAsync(ISpecification<T> specification);
     }
 }

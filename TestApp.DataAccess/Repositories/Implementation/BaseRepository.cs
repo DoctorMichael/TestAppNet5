@@ -1,10 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using TestApp.DataAccess.Context;
 using TestApp.DataAccess.Repositories.Interfaces;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
 
 namespace TestApp.DataAccess.Repositories.Implementation
 {
@@ -21,7 +18,6 @@ namespace TestApp.DataAccess.Repositories.Implementation
         }
 
         public IUnitOfWork UnitOfWork { get => _context; }
-
 
 
         public async Task<T> CreateAsync(T item)
@@ -47,6 +43,11 @@ namespace TestApp.DataAccess.Repositories.Implementation
             _context.Set<T>().Remove(item);
             return Task.CompletedTask;
         }
-    }
 
+        public Task<int> DeleteRange(T[] items)
+        {
+            _context.Set<T>().RemoveRange(items);
+            return Task.FromResult(items.Length);
+        }
+    }
 }

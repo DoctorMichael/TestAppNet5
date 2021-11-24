@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TestApp.DataAccess.Context;
 using TestApp.DataAccess.Repositories.Interfaces;
@@ -27,6 +24,18 @@ namespace TestApp.DataAccess.Repositories.Implementation
             else
                 return await _dbSetUser.AsNoTracking()
                                        .ToListAsync();
+        }
+
+        public async Task<User> GetSingleUserAsync(int userId)
+        {
+            return await _dbSetUser.Include(u => u.UserAnswers)
+                                   .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
+        public async Task<User> AddNewUserAsync(User user)
+        {
+            var res = await _dbSetUser.AddAsync(user);
+            return res.Entity;
         }
     }
 }

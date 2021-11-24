@@ -1,24 +1,18 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TestApp.BusinessLogic.Services.Implementation;
 using TestApp.BusinessLogic.Services.Interfaces;
 using TestApp.DataAccess.Context;
 using TestApp.DataAccess.Repositories.Implementation;
 using TestApp.DataAccess.Repositories.Interfaces;
-using TestApp.Domain.Models;
 using TestApp.Middlewares;
 using TestApp.Profiles;
 
@@ -31,6 +25,8 @@ namespace TestApp
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            ValidatorOptions.Global.LanguageManager.Enabled = false;
         }
 
 
@@ -43,8 +39,12 @@ namespace TestApp
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITestRepository, TestRepository>();
+            services.AddScoped<IQuestionRepository, QuestionRepository>();
+            services.AddScoped<IUserAnswerRepository, UserAnswerRepository>();
 
             services.AddAutoMapper(typeof(TestProfile));
+
+            services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
 
             services.AddControllersWithViews().AddNewtonsoftJson(options =>
                      options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);

@@ -6,7 +6,6 @@ namespace TestApp.DTOs
     {
         public int Id { get; set; }
         public string AnswerText { get; set; }
-        public bool IsCorrect { get; set; }
         public int QuestionId { get; set; }
 
         public AnswerDto() { }
@@ -15,7 +14,6 @@ namespace TestApp.DTOs
         {
             Id = answer.Id;
             AnswerText = answer.AnswerText;
-            IsCorrect = answer.IsCorrect;
             QuestionId = answer.QuestionId;
         }
     }

@@ -79,24 +79,29 @@ namespace TestApp.Controllers
         }
 
 
-        [HttpGet("GetUserAnswerForTest")]
-        public async Task<ActionResult> GetUserAnswerForTest(int userId, int testId)
+        [HttpGet("GetUserAnswersForTest")]
+        public async Task<ActionResult> GetUserAnswersForTest(int userId, int testId)
         {
             var res = await _userService.GetUserAnswersForTestAsync(userId, testId);
 
-            return Ok(res);
+            List<UserAnswerDto> userAnswers = new();
+
+            foreach (var item in res)
+            {
+                userAnswers.Add(new UserAnswerDto(item));
+            }
+
+            return Ok(userAnswers);
         }
 
 
-        //[HttpGet("CheckCorrectnessUserAnswersForTest")]
-        //public async Task<ActionResult> CheckCorrectnessUserAnswersForTest(int userId, int testId)
-        //{
-        //    var userAnswers = await _userService.GetUserAnswersForTestAsync(userId, testId);
+        [HttpGet("CheckCorrectnessUserAnswersForTest")]
+        public async Task<ActionResult> CheckCorrectnessUserAnswersForTest(int userId, int testId)
+        {
+            Test test = await _userService.CheckCorrectnessUserAnswersForTestAsync(userId, testId);
 
-        //    Test test = await _userService.GetSingleTestByIdAsync(testId);
-
-        //    return Ok(res);
-        //}
+            return Ok(new CheckUserAnswersForTestDto(test.Questions) { UserId = userId, TestId = testId, TestName = test.TestName});
+        }
 
 
         [HttpPost("AddNewUser")]

@@ -26,7 +26,6 @@ namespace TestApp.BusinessLogic.Services.Implementation
             _userAnswerRepository = userAnswerRepository;
         }
 
-
         public async Task<IEnumerable<User>> GetAllUsersAsync(bool includeUserAnswers)
         {
             var res = await _userRepository.GetAllUsersAsync(includeUserAnswers);
@@ -62,7 +61,7 @@ namespace TestApp.BusinessLogic.Services.Implementation
             var res = await _userAnswerRepository.GetUserAnswersForTestAsync(userId, testId);
 
             if (res == null || !res.Any())
-                throw new ItemNotFoundException("Impossible to get any UserAnswer for UserId : " + userId + " TestId: " + testId);
+                throw new ItemNotFoundException("Impossible to get any UserAnswers for UserId: " + userId + " TestId: " + testId);
 
             return res;
         }
@@ -98,6 +97,45 @@ namespace TestApp.BusinessLogic.Services.Implementation
             return res;
         }
 
+        public async Task<Test> CheckCorrectnessUserAnswersForTestAsync(int userId, int testId)
+        {
+            var userAnswers = await GetUserAnswersForTestAsync(userId, testId);
+            var test = await GetSingleTestByIdAsync(testId);
+
+            if (test.Questions == null || test.Questions.Count == 0)
+                throw new ItemNotFoundException("Unable to get any Questions for Test ID: " + testId + ".");
+            
+            if (test.Questions.Count < userAnswers.Count())
+                throw new ItemNotFoundException("Incorrect passing of the Test ID: " + testId + ". Number of Answers more than Questions.");
+
+
+            Test resTest = new() { Id = test.Id, TestName = test.TestName, Questions = new List<Question>() };
+
+            foreach (var item in test.Questions)
+            {
+                if (item.Answers == null || item.Answers.Count == 0)
+                    throw new ItemNotFoundException("Invalid Test ID: " + testId + ". Question ID: " + item.Id + " has no answer options.");
+
+                resTest.Questions.Add(new() { Id = item.Id, QuestionText = item.QuestionText, Answers = new List<Answer>() });
+
+                bool userAnswerNotFound = true;
+
+                foreach (var answer in item.Answers)
+                {
+                    if (userAnswers.FirstOrDefault(x => x.AnswerID == answer.Id) != null)
+                    {
+                        resTest.Questions.Last().Answers.Add(answer);
+                        userAnswerNotFound = false;
+                        break;
+                    }
+                }
+
+                if (userAnswerNotFound)
+                    resTest.Questions.Last().Answers.Add(new() { Id = -1, AnswerText = "Answer Not Found.", IsCorrect = false });
+            }
+
+            return resTest;
+        }
 
         public async Task<int> AddNewUserAsync(User user)
         {
@@ -193,7 +231,7 @@ namespace TestApp.BusinessLogic.Services.Implementation
             return await UpdateTestAsync(test);
         }
 
-       
+
         public async Task<int> RemoveUserAsync(int userId)
         {
             User removeUser = await _userRepository.GetSingleUserAsync(userId);
@@ -292,7 +330,7 @@ namespace TestApp.BusinessLogic.Services.Implementation
             return await UpdateTestAsync(test);
         }
 
-      
+
         public async Task<Test> UpdateTestAsync(Test test)
         {
             if (test == null)

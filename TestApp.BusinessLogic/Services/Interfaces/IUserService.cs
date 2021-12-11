@@ -10,10 +10,7 @@ namespace TestApp.BusinessLogic.Services.Interfaces
         Task<Test> GetSingleTestByIdAsync(int testId);
         Task<Question> GetSingleQuestionAsync(int questionId);
         Task<IEnumerable<UserAnswer>> GetUserAnswersForTestAsync(int userId, int testId);
-
-
-        //Task<User> AuthenticateUserAsync(string name, string password);
-        //Task<User> RegisterUserAsync(string name, string password);
+        Task<Test> CheckCorrectnessUserAnswersForTestAsync(int userId, int testId);
 
 
         // ============== Extra features for: user.IsController = true; ==================

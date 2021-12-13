@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TestApp.DataAccess.Context;
 using TestApp.DataAccess.Repositories.Interfaces;
@@ -18,7 +19,7 @@ namespace TestApp.DataAccess.Repositories.Implementation
         public async Task<IEnumerable<UserAnswer>> GetUserAnswersForTestAsync(int userId, int testId)
         {
             return await _dbSetUserAnswer.AsNoTracking()
-                                         .Include(u => u.UserID == userId && u.TestID == testId)
+                                         .Where(u => u.UserID == userId && u.TestID == testId)
                                          .ToListAsync();
         }
 
@@ -27,11 +28,5 @@ namespace TestApp.DataAccess.Repositories.Implementation
             var res = await _dbSetUserAnswer.AddAsync(userAnswer);
             return res.Entity;
         }
-
-        //public Task RemoveUserAnswers(IEnumerable<UserAnswer> userAnswers)
-        //{
-        //    _dbSetUserAnswer.RemoveRange(userAnswers);
-        //    return Task.CompletedTask;
-        //}
     }
 }

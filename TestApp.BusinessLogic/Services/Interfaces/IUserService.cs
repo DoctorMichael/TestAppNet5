@@ -8,12 +8,10 @@ namespace TestApp.BusinessLogic.Services.Interfaces
     {
         Task<IEnumerable<Test>> GetAllTestsAsync(bool inclQuestions);
         Task<Test> GetSingleTestByIdAsync(int testId);
+        Task<int> GetUserIdAsync(string name, string password);
         Task<Question> GetSingleQuestionAsync(int questionId);
         Task<IEnumerable<UserAnswer>> GetUserAnswersForTestAsync(int userId, int testId);
-
-
-        //Task<User> AuthenticateUserAsync(string name, string password);
-        //Task<User> RegisterUserAsync(string name, string password);
+        Task<Test> CheckCorrectnessUserAnswersForTestAsync(int userId, int testId);
 
 
         // ============== Extra features for: user.IsController = true; ==================

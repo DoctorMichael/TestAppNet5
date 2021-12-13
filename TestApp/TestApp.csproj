@@ -16,11 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Implementation\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\TestApp.BusinessLogic\TestApp.BusinessLogic.csproj" />
     <ProjectReference Include="..\TestApp.DataAccess\TestApp.DataAccess.csproj" />
     <ProjectReference Include="..\TestApp.Domain\TestApp.Domain.csproj" />

@@ -22,7 +22,7 @@ namespace TestApp.Controllers
         }
 
 
-        [HttpGet("GetAllUsers{includeUserAnswers}")]
+        [HttpGet("GetAllUsers/{includeUserAnswers}")]
         public async Task<ActionResult> GetAllUsers(bool includeUserAnswers)
         {
             var res = await _userService.GetAllUsersAsync(includeUserAnswers);
@@ -37,8 +37,16 @@ namespace TestApp.Controllers
             return Ok(userDtos);
         }
 
+        [HttpGet("GetUserId")]
+        public async Task<ActionResult> GetUserId(string name, string password)
+        {
+            var res = await _userService.GetUserIdAsync(name, password);
 
-        [HttpGet("GetAllTests{includeQuestions}")]
+            return Ok(res);
+        }
+
+
+        [HttpGet("GetAllTests/{includeQuestions}")]
         public async Task<ActionResult> GetAllTests(bool includeQuestions)
         {
             var res = await _userService.GetAllTestsAsync(includeQuestions);
@@ -54,7 +62,7 @@ namespace TestApp.Controllers
         }
 
 
-        [HttpGet("GetAllQuestions{includeAnswers}")]
+        [HttpGet("GetAllQuestions/{includeAnswers}")]
         public async Task<ActionResult> GetAllQuestions(bool includeAnswers)
         {
             var res = await _userService.GetAllQuestionsAsync(includeAnswers);
@@ -70,7 +78,7 @@ namespace TestApp.Controllers
         }
 
 
-        [HttpGet("GetSingleTest{testId}")]
+        [HttpGet("GetSingleTest/{testId}")]
         public async Task<ActionResult> GetSingleTest(int testId)
         {
             var res = await _userService.GetSingleTestByIdAsync(testId);
@@ -79,24 +87,29 @@ namespace TestApp.Controllers
         }
 
 
-        [HttpGet("GetUserAnswerForTest")]
-        public async Task<ActionResult> GetUserAnswerForTest(int userId, int testId)
+        [HttpGet("GetUserAnswersForTest")]
+        public async Task<ActionResult> GetUserAnswersForTest(int userId, int testId)
         {
             var res = await _userService.GetUserAnswersForTestAsync(userId, testId);
 
-            return Ok(res);
+            List<UserAnswerDto> userAnswers = new();
+
+            foreach (var item in res)
+            {
+                userAnswers.Add(new UserAnswerDto(item));
+            }
+
+            return Ok(userAnswers);
         }
 
 
-        //[HttpGet("CheckCorrectnessUserAnswersForTest")]
-        //public async Task<ActionResult> CheckCorrectnessUserAnswersForTest(int userId, int testId)
-        //{
-        //    var userAnswers = await _userService.GetUserAnswersForTestAsync(userId, testId);
+        [HttpGet("CheckCorrectnessUserAnswersForTest")]
+        public async Task<ActionResult> CheckCorrectnessUserAnswersForTest(int userId, int testId)
+        {
+            Test test = await _userService.CheckCorrectnessUserAnswersForTestAsync(userId, testId);
 
-        //    Test test = await _userService.GetSingleTestByIdAsync(testId);
-
-        //    return Ok(res);
-        //}
+            return Ok(new CheckUserAnswersForTestDto(test.Questions) { UserId = userId, TestId = testId, TestName = test.TestName});
+        }
 
 
         [HttpPost("AddNewUser")]
@@ -193,7 +206,7 @@ namespace TestApp.Controllers
 
 
 
-        [HttpDelete("RemoveUser{userId}")]
+        [HttpDelete("RemoveUser/{userId}")]
         public async Task<ActionResult> RemoveUserById(int userId)
         {
             var res = await _userService.RemoveUserAsync(userId);
@@ -202,7 +215,7 @@ namespace TestApp.Controllers
         }
 
 
-        [HttpDelete("RemoveTest{testId}")]
+        [HttpDelete("RemoveTest/{testId}")]
         public async Task<ActionResult> RemoveTestById(int testId)
         {
             var res = await _userService.RemoveTestAsync(testId);
@@ -211,7 +224,7 @@ namespace TestApp.Controllers
         }
 
 
-        [HttpDelete("RemoveQuestion{questionId}")]
+        [HttpDelete("RemoveQuestion/{questionId}")]
         public async Task<ActionResult> RemoveQuestionById(int questionId)
         {
             var res = await _userService.RemoveQuestionAsync(questionId);

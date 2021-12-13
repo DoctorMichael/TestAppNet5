@@ -8,6 +8,7 @@ namespace TestApp.DataAccess.Repositories.Interfaces
     {
         Task<IEnumerable<User>> GetAllUsersAsync(bool includeUserAnswers);
         Task<User> GetSingleUserAsync(int userId);
+        Task<User> GetUserIdAsync(string name, string password);
         Task<User> AddNewUserAsync(User user);
     }
 }

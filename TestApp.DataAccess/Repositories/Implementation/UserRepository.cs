@@ -32,6 +32,11 @@ namespace TestApp.DataAccess.Repositories.Implementation
                                    .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        public async Task<User> GetUserIdAsync(string name, string password)
+        {
+            return await _dbSetUser.FirstOrDefaultAsync(u => u.Name == name && u.Password == password);
+        }
+
         public async Task<User> AddNewUserAsync(User user)
         {
             var res = await _dbSetUser.AddAsync(user);

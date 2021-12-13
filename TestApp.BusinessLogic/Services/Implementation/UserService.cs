@@ -36,6 +36,16 @@ namespace TestApp.BusinessLogic.Services.Implementation
             return res;
         }
 
+        public async Task<int> GetUserIdAsync(string name, string password)
+        {
+            var res = await _userRepository.GetUserIdAsync(name, password);
+
+            if (res == null)
+                throw new ItemNotFoundException("Impossible to get Id for this User.");
+
+            return res.Id;
+        }
+
         public async Task<IEnumerable<Test>> GetAllTestsAsync(bool includeQuestions)
         {
             var res = await _testRepository.GetAllTestsAsync(includeQuestions);
@@ -131,7 +141,7 @@ namespace TestApp.BusinessLogic.Services.Implementation
                 }
 
                 if (userAnswerNotFound)
-                    resTest.Questions.Last().Answers.Add(new() { Id = -1, AnswerText = "Answer Not Found.", IsCorrect = false });
+                    resTest.Questions.Last().Answers.Add(new() { Id = -1, AnswerText = "Warning: User Answer Not Found.", IsCorrect = false });
             }
 
             return resTest;
